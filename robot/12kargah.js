@@ -1,5 +1,5 @@
 //⏰ 23:30:00 🗓️ چهارشنبه 15 مرداد 1404
-// ماژول مدیریت کارگاه‌ها - مشابه Python kargah_module.py
+// ماژول مدیریت راهبران - مشابه Python kargah_module.py
 
 const fs = require('fs');
 const { hasPermission } = require('./6mid');
@@ -7,7 +7,7 @@ const { addCoachByPhone, removeCoachByPhone, WORKSHOP_CONFIG } = require('./3con
 
 class KargahModule {
   constructor() {
-    this.workshops = {}; // ذخیره کارگاه‌ها
+    this.workshops = {}; // ذخیره راهبران
     this.userStates = {}; // وضعیت کاربران
     this.tempData = {}; // داده‌های موقت برای اضافه/ویرایش
     this.workshopsFile = './data/workshops.json';
@@ -84,7 +84,7 @@ class KargahModule {
     const keyboard = [];
     
     if (!this.workshops.coach || Object.keys(this.workshops.coach).length === 0) {
-      keyboard.push([{ text: '📝 کارگاه جدید', callback_data: 'kargah_add' }]);
+      keyboard.push([{ text: `📝 ${WORKSHOP_CONFIG.DISPLAY_NAMES.WORKSHOP} جدید`, callback_data: 'kargah_add' }]);
       keyboard.push([{ text: '🔙 بازگشت', callback_data: 'kargah_back' }]);
     } else {
       for (const [coachId, coach] of Object.entries(this.workshops.coach)) {
@@ -96,7 +96,7 @@ class KargahModule {
         }]);
       }
       
-      keyboard.push([{ text: '📝 کارگاه جدید', callback_data: 'kargah_add' }]);
+      keyboard.push([{ text: `📝 ${WORKSHOP_CONFIG.DISPLAY_NAMES.WORKSHOP} جدید`, callback_data: 'kargah_add' }]);
       keyboard.push([{ text: '🔙 بازگشت', callback_data: 'kargah_back' }]);
     }
     
@@ -106,7 +106,7 @@ class KargahModule {
   getWorkshopManagementKeyboard() {
     const keyboard = [];
     
-    // نمایش لیست کارگاه‌ها
+    // نمایش لیست راهبران
     if (this.workshops.coach && Object.keys(this.workshops.coach).length > 0) {
       for (const [coachId, coach] of Object.entries(this.workshops.coach)) {
         const instructorName = coach.name || 'نامشخص';
@@ -121,7 +121,7 @@ class KargahModule {
     }
     
     // دکمه‌های عملیات
-    keyboard.push([{ text: '📝 اضافه کردن کارگاه', callback_data: 'kargah_add' }]);
+            keyboard.push([{ text: '📝 اضافه کردن راهبر', callback_data: 'kargah_add' }]);
     
     return { inline_keyboard: keyboard };
   }
@@ -130,9 +130,8 @@ class KargahModule {
     const keyboard = [
       [{ text: '✏️ ویرایش نام مربی', callback_data: `kargah_edit_instructor_${workshopId}` }],
       [{ text: '📱 ویرایش تلفن مربی', callback_data: `kargah_edit_phone_${workshopId}` }],
-      [{ text: '💰 ویرایش هزینه', callback_data: `kargah_edit_cost_${workshopId}` }],
-      [{ text: '🔗 ویرایش لینک', callback_data: `kargah_edit_link_${workshopId}` }],
-      [{ text: '🗑️ حذف کارگاه', callback_data: `kargah_delete_${workshopId}` }],
+      [{ text: '🔗 ویرایش منطقه', callback_data: `kargah_edit_link_${workshopId}` }],
+      [{ text: '🗑️ حذف راهبر', callback_data: `kargah_delete_${workshopId}` }],
       [{ text: '🔙 بازگشت', callback_data: 'kargah_list' }]
     ];
     return { inline_keyboard: keyboard };
@@ -153,7 +152,7 @@ class KargahModule {
         const cost = workshop.cost || 'نامشخص';
         const level = workshop.level || '';
         const emoji = level.includes('پیشرفته') ? '🔥' : level.includes('متوسط') ? '⚡' : '🌱';
-        // نمایش نام مربی به جای ID کارگاه
+        // نمایش نام مربی به جای ID راهبر
         text += `${emoji} *${instructorName}* - ${cost}\n`;
       }
       text += `\nبرای مشاهده جزئیات و ویرایش، روی ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} مورد نظر کلیک کنید:`;
@@ -277,7 +276,7 @@ class KargahModule {
         const instructorName = coach.name || 'نامشخص';
         const cost = coach.cost || 'نامشخص';
         const link = coach.link || 'نامشخص';
-        // نمایش نام مربی به جای ID کارگاه
+        // نمایش نام مربی به جای ID راهبر
         text += `🏭 *${instructorName}*\n`;
         text += `💰 هزینه: ${cost}\n`;
         text += `🔗 لینک: ${link}\n\n`;
@@ -304,7 +303,7 @@ class KargahModule {
   
   async handleAddWorkshopStep(chatId, userId, text, userState) {
     try {
-      console.log(`Processing add workshop step: ${userState}`);
+      console.log(`Processing add leader step: ${userState}`);
       console.log(`Text received: "${text}"`);
       
       // اطمینان از وجود tempData برای کاربر
@@ -319,7 +318,7 @@ class KargahModule {
           return true;
         }
         
-        console.log(`✅ Accepting instructor name: "${text.trim()}"`);
+        console.log(`✅ Accepting leader name: "${text.trim()}"`);
         this.tempData[userId].instructor_name = text.trim();
         this.userStates[userId] = 'kargah_add_cost';
         
@@ -366,7 +365,7 @@ class KargahModule {
         // حذف کامل اعتبارسنجی لینک - هر متنی پذیرفته شود
         this.tempData[userId].link = text;
         
-        // نمایش خلاصه کارگاه قبل از ذخیره
+        // نمایش خلاصه راهبر قبل از ذخیره
         const phoneDisplay = this.tempData[userId].instructor_phone ? `\n📱 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE}:* ${this.tempData[userId].instructor_phone}` : `\n📱 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE}:* وارد نشده`;
         const summaryText = `📋 *خلاصه ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید*\n\n👨‍🏫 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME}:* ${this.tempData[userId].instructor_name}${phoneDisplay}\n💰 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.COST}:* ${this.tempData[userId].cost}\n🔗 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.LINK}:* ${this.tempData[userId].link}\n\n✅ آیا می‌خواهید این ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} را ذخیره کنید؟`;
         
@@ -423,7 +422,7 @@ class KargahModule {
     }
     
     if (!workshop) {
-      const text = '❌ کارگاه مورد نظر یافت نشد.';
+      const text = '❌ راهبر مورد نظر یافت نشد.';
       const replyMarkup = this.getWorkshopManagementKeyboard();
       await this.editMessageWithInlineKeyboard(chatId, messageId, text, replyMarkup.inline_keyboard);
       return true;
@@ -438,7 +437,7 @@ class KargahModule {
     const duration = workshop.duration || 'نامشخص';
     const level = workshop.level || 'نامشخص';
     
-    let text = `🏭 *جزئیات ${workshopType === 'coach' ? 'کارگاه' : 'کمک مربی'}*\n\n`;
+          let text = `🏭 *جزئیات ${workshopType === 'coach' ? 'راهبر' : 'کمک مربی'}*\n\n`;
     text += `👨‍🏫 *نام ${workshopType === 'coach' ? 'مربی' : 'کمک مربی'}:* ${instructorName}\n`;
     text += `📱 *تلفن:* ${instructorPhone}\n`;
     if (workshopType === 'coach') {
@@ -560,7 +559,7 @@ class KargahModule {
     this.tempData[userId] = { workshop_id: workshopId, workshop_type: workshopType };
     
     const currentCost = workshop.cost || 'نامشخص';
-    const text = `💰 *ویرایش هزینه کارگاه*\n\nهزینه فعلی: ${currentCost}\n\nلطفاً هزینه جدید را وارد کنید:\n\nمثال‌ها:\n• 500,000 تومان\n• 750000 تومان\n• 1000000 تومان\n• ۱,۰۰۰,۰۰۰ تومان`;
+          const text = `💰 *ویرایش منطقه راهبر*\n\nمنطقه فعلی: ${currentCost}\n\nلطفاً منطقه جدید را وارد کنید:\n\nمثال‌ها:\n• تهران\n• اصفهان\n• مشهد\n• شیراز`;
     const keyboard = [[{ text: '🔙 بازگشت', callback_data: `kargah_view_${workshopId}` }]];
     await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
     return true;
@@ -644,7 +643,7 @@ class KargahModule {
             delete this.tempData[userId];
           }
           
-          const responseText = `✅ نام مربی کارگاه *${workshopId}* با موفقیت تغییر یافت!\n\n👤 *قبل:* ${oldName}\n👤 *بعد:* ${text.trim()}`;
+          const responseText = `✅ نام مربی راهبر *${workshopId}* با موفقیت تغییر یافت!\n\n👤 *قبل:* ${oldName}\n👤 *بعد:* ${text.trim()}`;
           const replyMarkup = this.getWorkshopManagementKeyboard();
           await this.sendMessageWithInlineKeyboard(chatId, responseText, replyMarkup.inline_keyboard);
         }
@@ -696,7 +695,7 @@ class KargahModule {
           }
           
           const newPhoneDisplay = instructorPhone ? instructorPhone : 'حذف شد';
-          const responseText = `✅ تلفن مربی کارگاه *${workshopId}* با موفقیت تغییر یافت!\n\n📱 *قبل:* ${oldPhone}\n📱 *بعد:* ${newPhoneDisplay}`;
+          const responseText = `✅ تلفن مربی راهبر *${workshopId}* با موفقیت تغییر یافت!\n\n📱 *قبل:* ${oldPhone}\n📱 *بعد:* ${newPhoneDisplay}`;
           const replyMarkup = this.getWorkshopManagementKeyboard();
           await this.sendMessageWithInlineKeyboard(chatId, responseText, replyMarkup.inline_keyboard);
         }
@@ -740,7 +739,7 @@ class KargahModule {
             delete this.tempData[userId];
           }
           
-          const responseText = `✅ هزینه کارگاه *${workshopId}* با موفقیت تغییر یافت!\n\n💰 *قبل:* ${oldCost}\n💰 *بعد:* ${normalizedCost}`;
+          const responseText = `✅ منطقه راهبر *${workshopId}* با موفقیت تغییر یافت!\n\n💰 *قبل:* ${oldCost}\n💰 *بعد:* ${normalizedCost}`;
           const replyMarkup = this.getWorkshopManagementKeyboard();
           await this.sendMessageWithInlineKeyboard(chatId, responseText, replyMarkup.inline_keyboard);
         }
@@ -778,7 +777,7 @@ class KargahModule {
             delete this.tempData[userId];
           }
           
-          const responseText = `✅ لینک کارگاه *${workshopId}* با موفقیت تغییر یافت!\n\n🔗 *قبل:* ${oldLink}\n🔗 *بعد:* ${text}`;
+          const responseText = `✅ منطقه راهبر *${workshopId}* با موفقیت تغییر یافت!\n\n🔗 *قبل:* ${oldLink}\n🔗 *بعد:* ${text}`;
           const replyMarkup = this.getWorkshopManagementKeyboard();
           await this.sendMessageWithInlineKeyboard(chatId, responseText, replyMarkup.inline_keyboard);
         }
@@ -795,7 +794,7 @@ class KargahModule {
         delete this.tempData[userId];
       }
       
-      const responseText = '❌ خطا در ویرایش کارگاه. لطفاً دوباره تلاش کنید.';
+      const responseText = '❌ خطا در ویرایش راهبر. لطفاً دوباره تلاش کنید.';
       const replyMarkup = this.getWorkshopManagementKeyboard();
       await this.sendMessageWithInlineKeyboard(chatId, responseText, replyMarkup.inline_keyboard);
       return false;
@@ -832,7 +831,7 @@ class KargahModule {
     const workshopName = workshop.name || workshop.instructor_name || 'نامشخص';
     const instructorPhone = workshop.phone || workshop.instructor_phone;
     
-    // حذف کارگاه
+    // حذف راهبر
     if (workshopType === 'coach') {
       const coachId = workshopId.startsWith('coach_') ? workshopId.replace('coach_', '') : workshopId;
       delete this.workshops.coach[coachId];
@@ -857,14 +856,14 @@ class KargahModule {
       }
     }
     
-    const text = `🗑️ ${workshopType === 'coach' ? 'کارگاه' : 'کمک مربی'} ${workshopName} با موفقیت حذف شد!`;
+          const text = `🗑️ ${workshopType === 'coach' ? 'راهبر' : 'کمک مربی'} ${workshopName} با موفقیت حذف شد!`;
     const replyMarkup = this.getWorkshopManagementKeyboard();
     await this.editMessageWithInlineKeyboard(chatId, messageId, text, replyMarkup.inline_keyboard);
     return true;
   }
   
   async handleBackToMain(chatId, messageId, callbackQueryId) {
-    const text = '🏭 *مدیریت کارگاه‌ها*\n\nلطفاً یکی از گزینه‌های زیر را انتخاب کنید:';
+    const text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}*\n\nلطفاً یکی از گزینه‌های زیر را انتخاب کنید:`;
     const replyMarkup = this.getWorkshopManagementKeyboard();
     await this.editMessageWithInlineKeyboard(chatId, messageId, text, replyMarkup.inline_keyboard);
     return true;
@@ -876,7 +875,7 @@ class KargahModule {
         return false;
       }
       
-      // ایجاد کارگاه جدید در بخش coach
+      // ایجاد راهبر جدید در بخش coach
       const coachId = String(Object.keys(this.workshops.coach || {}).length + 1);
       const workshopData = { ...this.tempData[userId] };
       
@@ -936,7 +935,7 @@ class KargahModule {
       delete this.userStates[userId];
       delete this.tempData[userId];
       
-      // شروع مجدد فرآیند اضافه کردن
+      // شروع مجدد فرآیند اضافه کردن راهبر
       this.userStates[userId] = 'kargah_add_instructor';
       this.tempData[userId] = {};
       
@@ -970,13 +969,13 @@ class KargahModule {
 
 لطفاً یکی از کلاس‌های زیر را انتخاب کنید:`;
       
-      // ساخت کیبورد برای انتخاب کارگاه
+      // ساخت کیبورد برای انتخاب راهبر
       const keyboard = [];
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
         const cost = workshop.cost || 'نامشخص';
         
-        // فیلتر کردن کارگاه‌های نامعتبر (با نام‌های کوتاه یا نامعتبر)
+        // فیلتر کردن راهبرهای نامعتبر (با نام‌های کوتاه یا نامعتبر)
         if (instructorName.length > 2 && instructorName !== 'نامشخص' && 
             cost.length > 5 && cost !== 'نامشخص') {
           keyboard.push([{
@@ -1112,7 +1111,7 @@ class KargahModule {
       const replyMarkup = { inline_keyboard: keyboard };
       await this.editMessageWithInlineKeyboard(chatId, messageId, noWorkshopsText, replyMarkup.inline_keyboard);
     } else {
-      // ساخت کیبورد برای انتخاب کارگاه
+      // ساخت کیبورد برای انتخاب راهبر
       const keyboard = [];
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
@@ -1173,13 +1172,13 @@ class KargahModule {
 
 لطفاً یکی از کلاس‌های زیر را انتخاب کنید:`;
       
-      // ساخت کیبورد برای انتخاب کارگاه
+      // ساخت کیبورد برای انتخاب راهبر
       const keyboard = [];
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
         const cost = workshop.cost || 'نامشخص';
         
-        // فیلتر کردن کارگاه‌های نامعتبر (با نام‌های کوتاه یا نامعتبر)
+        // فیلتر کردن راهبرهای نامعتبر (با نام‌های کوتاه یا نامعتبر)
         if (instructorName.length > 2 && instructorName !== 'نامشخص' && 
             cost.length > 5 && cost !== 'نامشخص') {
           keyboard.push([{
