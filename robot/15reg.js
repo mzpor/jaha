@@ -305,12 +305,12 @@ class RegistrationModule {
         console.log(`🔍 [15REG] نقش کاربر از حافظه: ${userRole}`);
         
         if (userRole === 'coach' || userRole === 'assistant') {
-            // مربی یا کمک مربی - تکمیل ثبت‌نام
+            // راهبر یا دبیر - تکمیل ثبت‌نام
             console.log(`✅ [15REG] تکمیل ثبت‌نام برای ${userRole}`);
             this.userStates[userId].step = 'completed';
             this.saveData();
             
-            const roleText = userRole === 'coach' ? 'مربی' : 'کمک مربی';
+            const roleText = userRole === 'coach' ? 'راهبر' : 'دبیر';
             const firstName = userData.firstName || 'کاربر';
             
             const welcomeText = `👨‍🏫 خوش‌آمدی ${roleText} ${firstName}
@@ -319,9 +319,9 @@ class RegistrationModule {
             // ساخت کیبرد متناسب با نقش
             let keyboardRows;
             if (userRole === 'coach') {
-                keyboardRows = [['شروع', 'مربی', 'ربات', 'خروج']];
+                keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
             } else {
-                keyboardRows = [['شروع', 'کمک مربی', 'ربات', 'خروج']];
+                keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
             }
             
             // اضافه کردن دکمه ریست اگر مجاز باشد
@@ -438,14 +438,14 @@ class RegistrationModule {
             return true;
         }
         
-        if (messageText === 'مربی') {
-            console.log(`👨‍🏫 [15REG] دکمه مربی فشرده شد`);
+        if (messageText === 'راهبر') {
+            console.log(`👨‍🏫 [15REG] دکمه راهبر فشرده شد`);
             await this.handleCoachButton(artificialCtx);
             return true;
         }
         
-        if (messageText === 'کمک مربی') {
-            console.log(`👨‍🏫 [15REG] دکمه کمک مربی فشرده شد`);
+        if (messageText === 'دبیر') {
+            console.log(`👨‍🏫 [15REG] دکمه دبیر فشرده شد`);
             await this.handleAssistantButton(artificialCtx);
             return true;
         }
@@ -819,9 +819,10 @@ class RegistrationModule {
         ctx.reply(`🎯 منوی ${role} نمایش داده می‌شود`);
     }
 
-    // خوش‌آمدگویی مربی/کمک مربی
+    // خوش‌آمدگویی راهبر/دبیر
     async handleCoachWelcome(ctx, role, firstName) {
-        const roleText = role === 'coach' ? 'مربی' : 'کمک مربی';
+        // استفاده از نام‌های صحیح نقش‌ها از کانفیگ
+        const roleText = role === 'coach' ? 'راهبر' : 'دبیر';
         
         const welcomeText = `👨‍🏫 خوش‌آمدی ${roleText} ${firstName}
 پنل ${roleText} فعال شد`;
@@ -829,9 +830,9 @@ class RegistrationModule {
         // ساخت کیبرد متناسب با نقش
         let keyboardRows;
         if (role === 'coach') {
-            keyboardRows = [['شروع', 'مربی', 'ربات', 'خروج']];
+            keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
         } else {
-            keyboardRows = [['شروع', 'کمک مربی', 'ربات', 'خروج']];
+            keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
         }
         
         // اضافه کردن دکمه ریست اگر مجاز باشد
@@ -1029,9 +1030,9 @@ class RegistrationModule {
         console.log(`🔍 [15REG] نقش کاربر: ${userRole}`);
         
         if (userRole === 'coach' || userRole === 'assistant') {
-            // 🔥 مربی یا کمک مربی - استفاده از نام ورکشاپ
+            // 🔥 راهبر یا دبیر - استفاده از نام ورکشاپ
             const workshopName = await this.getWorkshopName(userData.phone);
-            const firstName = workshopName || 'مربی';
+            const firstName = workshopName || 'راهبر';
             
             console.log(`✅ [15REG] تکمیل خودکار ثبت‌نام برای ${userRole} با نام: ${firstName}`);
             
@@ -1039,10 +1040,10 @@ class RegistrationModule {
             try {
                 if (userRole === 'coach') {
                     addUserToRole('COACH', userId, firstName, userData.phone);
-                    console.log(`✅ [15REG] کاربر ${userId} به عنوان مربی در کانفیگ اضافه شد`);
+                    console.log(`✅ [15REG] کاربر ${userId} به عنوان راهبر در کانفیگ اضافه شد`);
                 } else if (userRole === 'assistant') {
                     addUserToRole('ASSISTANT', userId, firstName, userData.phone);
-                    console.log(`✅ [15REG] کاربر ${userId} به عنوان کمک مربی در کانفیگ اضافه شد`);
+                    console.log(`✅ [15REG] کاربر ${userId} به عنوان دبیر در کانفیگ اضافه شد`);
                 }
             } catch (error) {
                 console.error(`❌ [15REG] خطا در اضافه کردن به کانفیگ:`, error.message);
@@ -1050,11 +1051,11 @@ class RegistrationModule {
             
             // تکمیل اطلاعات
             this.userStates[userId].data.firstName = firstName;
-            this.userStates[userId].data.fullName = workshopName || 'مربی';
+            this.userStates[userId].data.fullName = workshopName || 'راهبر';
             this.userStates[userId].step = 'completed';
             this.saveData();
             
-            const roleText = userRole === 'coach' ? 'مربی' : 'کمک مربی';
+            const roleText = userRole === 'coach' ? 'راهبر' : 'دبیر';
             
             const welcomeText = `👨‍🏫 خوش‌آمدی ${roleText} ${firstName}
 پنل ${roleText} فعال شد`;
@@ -1062,9 +1063,9 @@ class RegistrationModule {
             // ساخت کیبرد متناسب با نقش
             let keyboardRows;
             if (userRole === 'coach') {
-                keyboardRows = [['شروع', 'مربی', 'ربات', 'خروج']];
+                keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
             } else {
-                keyboardRows = [['شروع', 'کمک مربی', 'ربات', 'خروج']];
+                keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
             }
             
             // اضافه کردن دکمه ریست اگر مجاز باشد
@@ -1155,11 +1156,11 @@ class RegistrationModule {
         let roleText, keyboardRows;
         
         if (userRole === 'coach') {
-            roleText = 'مربی';
-            keyboardRows = [['شروع', 'مربی', 'ربات', 'خروج']];
+            roleText = 'راهبر';
+            keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
         } else if (userRole === 'assistant') {
-            roleText = 'کمک مربی';
-            keyboardRows = [['شروع', 'کمک مربی', 'ربات', 'خروج']];
+            roleText = 'دبیر';
+            keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
         } else {
             roleText = 'قرآن‌آموز';
             keyboardRows = [['شروع', 'قرآن‌آموز', 'ربات', 'خروج']];
@@ -1289,7 +1290,7 @@ class RegistrationModule {
         
         // کیبرد معمولی (موجود)
         const keyboard = {
-            keyboard: [['شروع', 'مربی', 'ربات', 'خروج']],
+            keyboard: [['شروع', 'راهبر', 'ربات', 'خروج']],
             resize_keyboard: true
         };
         
@@ -1788,11 +1789,11 @@ class RegistrationModule {
         let roleText, keyboardRows;
         
         if (userRole === 'coach') {
-            roleText = 'مربی';
-            keyboardRows = [['شروع', 'مربی', 'ربات', 'خروج']];
+            roleText = 'راهبر';
+            keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
         } else if (userRole === 'assistant') {
-            roleText = 'کمک مربی';
-            keyboardRows = [['شروع', 'کمک مربی', 'ربات', 'خروج']];
+            roleText = 'دبیر';
+            keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
         } else {
             roleText = 'قرآن‌آموز';
             keyboardRows = [['شروع', 'قرآن‌آموز', 'ربات', 'خروج']];
@@ -1838,9 +1839,9 @@ class RegistrationModule {
         
         let roleText;
         if (userRole === 'coach') {
-            roleText = 'مربی';
+            roleText = 'راهبر';
         } else if (userRole === 'assistant') {
-            roleText = 'کمک مربی';
+            roleText = 'دبیر';
         } else {
             roleText = 'قرآن‌آموز';
         }
