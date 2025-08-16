@@ -248,7 +248,7 @@ const generateCoachesKeyboard = () => {
     }
     
     const keyboard = coaches.map((coach, index) => {
-      const text = `${index + 1}. ${coach.name} (${coach.studentCount} قرآن آموز)`;
+              const text = `${index + 1}. ${coach.name} (${coach.studentCount} عضو جهادی)`;
       return [{ text: text, callback_data: `coach_${coach.id}` }];
     });
     

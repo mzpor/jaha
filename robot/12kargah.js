@@ -1091,7 +1091,7 @@ class KargahModule {
   }
   
   async handleStudentRegistration(chatId, messageId, userId, callbackQueryId) {
-    const text = `📝 **ثبت نام قرآن آموز**
+            const text = `📝 **ثبت نام عضو جهادی**
 
 🎯 **مراحل ثبت نام:**
 1️⃣ **انتخاب کلاس:** یکی از کلاس‌های موجود را انتخاب کنید
@@ -1152,7 +1152,7 @@ class KargahModule {
       console.error('Error returning to main menu:', error);
       // fallback keyboard
       const keyboard = [
-        ['ربات', 'معرفی مدرسه'],
+        ['ربات', 'معرفی مرکز'],
         ['ثبت‌نام', 'خروج']
       ];
       await this.sendMessage(chatId, text, { keyboard: keyboard.map(row => row.map(btn => ({ text: btn }))), resize_keyboard: true });
