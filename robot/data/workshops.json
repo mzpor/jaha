@@ -39,6 +39,26 @@
       "capacity": 100,
       "duration": "گزارش روزانه",
       "level": "حرفه ای "
+    },
+    "5": {
+      "name": "محمد فدوی",
+      "phone": "",
+      "region": "پهنه ۲",
+      "province": "تهران اصفهان",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
+    },
+    "6": {
+      "name": "مجید",
+      "phone": "09224939074",
+      "region": "پهنه ۲",
+      "province": "تهران\nاصفهان",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
     }
   },
   "assistant": {}

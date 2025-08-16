@@ -149,9 +149,9 @@ class KargahModule {
     
     let text = '';
     if (!this.workshops || Object.keys(this.workshops).length === 0) {
-      text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.\nبرای شروع، ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید اضافه کنید:`;
+      text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.\nبرای شروع، ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید اضافه کنید:`;
     } else {
-      text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n📋 لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}های ثبت شده:\n`;
+      text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}*\n\n📋 لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} ثبت شده:\n`;
       let counter = 1;
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
@@ -274,9 +274,9 @@ class KargahModule {
   async handleListWorkshops(chatId, messageId, callbackQueryId) {
     let text = '';
     if (!this.workshops.coach || Object.keys(this.workshops.coach).length === 0) {
-      text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.`;
+      text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.`;
     } else {
-      text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n`;
+      text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}*\n\n`;
       let counter = 1;
       for (const [coachId, coach] of Object.entries(this.workshops.coach)) {
         const instructorName = coach.name || 'نامشخص';
