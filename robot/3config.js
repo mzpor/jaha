@@ -195,9 +195,9 @@ const GROUP_MANAGEMENT_CONFIG = {
   }
 };
 
-// ===== کانفیگ مدیریت استادها =====
+// ===== کانفیگ مدیریت لیست دبیران =====
 const OSATD_MANAGEMENT_CONFIG = {
-  enabled: 1,  // 0 = غیرفعال (دکمه استادها دیده نمی‌شود)، 1 = فعال (در پنل مدیر، مربی و کمک مربی دیده می‌شود)
+  enabled: 1,  // 0 = غیرفعال (دکمه لیست دبیران دیده نمی‌شود)، 1 = فعال (در پنل مدیر، مربی و مربی دیده می‌شود)
   visibility: {
     admin: 1,        // مدیر راهبران
     instructor: 1,   // مربی
@@ -1251,12 +1251,12 @@ const hasGroupManagementAccess = (userRole) => {
   return true;
 };
 
-// تابع بررسی فعال بودن مدیریت استادها
+// تابع بررسی فعال بودن مدیریت لیست دبیران
 const isOsatdManagementEnabled = () => {
   return OSATD_MANAGEMENT_CONFIG.enabled === 1;
 };
 
-// تابع بررسی دسترسی کاربر به مدیریت استادها
+// تابع بررسی دسترسی کاربر به مدیریت لیست دبیران
 const hasOsatdManagementAccess = (userRole) => {
   if (!isOsatdManagementEnabled()) {
     return false;
@@ -1793,7 +1793,7 @@ module.exports = {
   GROUP_MANAGEMENT_CONFIG,
   isGroupManagementEnabled,
   hasGroupManagementAccess,
-  // ===== کانفیگ مدیریت استادها =====
+  // ===== کانفیگ مدیریت لیست دبیران =====
   OSATD_MANAGEMENT_CONFIG,
   isOsatdManagementEnabled,
   hasOsatdManagementAccess,

@@ -650,20 +650,7 @@ async function handleRoleMessage(msg, role) {
     keyboard = config.keyboard;
         } else if (msg.text === 'ربات') {
         // دستور ربات - برای همه کاربران (معرفی ساده)
-        reply = `🤖 **معرفی ربات جهادی هوشمند**
-
-📚 **قابلیت‌های اصلی:**
-• 📊 ارزیابی و نظر سنجی
-• 🏫 مدیریت گروه‌ها
-• 📝 گزارش روزانه و ماهانه
-
-🎯 **این ربات برای کمک به فعالیت‌های جهادی طراحی شده است**
-
-💡 **نکات مهم:**
-• همه کاربران می‌توانند از قابلیت‌های عمومی استفاده کنند
-• برای مدیریت پیشرفته، دسترسی ادمین لازم است
-
-⏰ ${getTimeStamp()}`;
+        reply = `ربات جهادی هوشمند 🤖 این ربات برای فعالیت‌های جهادی طراحی شده است 📚 قابلیت‌های اصلی: • مدیریت انجام گزارش روزانه • ارزیابی و نظر سنجی • مدیریت دبیران • گزارش روزانه و ماهانه • گزارش‌گیری از پژوهشها ⏰ ${getTimeStamp()}`;
         keyboard = config.keyboard;
       } else if (msg.text === 'ثبت اطلاعات') {
         // دکمه ثبت اطلاعات - بررسی کانفیگ
@@ -794,10 +781,10 @@ ${groupManagementText}👆 لطفاً گزینه مورد نظر را انتخا
         inlineKeyboard.push([{ text: '🏫 مدیریت گروه‌ها', callback_data: 'groups' }]);
       }
       
-      inlineKeyboard.push([{ text: '🏭 کارگاه‌ها', callback_data: 'kargah_management' }]);
-      // اضافه کردن دکمه استادها فقط اگر فعال باشد
+      inlineKeyboard.push([{ text: '🏭 راهبران', callback_data: 'kargah_management' }]);
+      // اضافه کردن دکمه لیست دبیران فقط اگر فعال باشد
       if (hasOsatdManagementAccess('SCHOOL_ADMIN')) {
-        inlineKeyboard.push([{ text: '👨‍🏫 استادها', callback_data: 'osatd_management' }]);
+        inlineKeyboard.push([{ text: '👨‍🏫 لیست دبیران', callback_data: 'osatd_management' }]);
       }
       
       const groupManagementText = hasGroupManagementAccess('SCHOOL_ADMIN') 
@@ -805,7 +792,7 @@ ${groupManagementText}👆 لطفاً گزینه مورد نظر را انتخا
         : '';
       
       const osatdText = hasOsatdManagementAccess('SCHOOL_ADMIN') 
-        ? '• 👨‍🏫 استادها\n' 
+        ? '• 👨‍🏫 لیست دبیران\n' 
         : '';
       
               const { getRoleDisplayName } = require('./3config');
@@ -813,7 +800,7 @@ ${groupManagementText}👆 لطفاً گزینه مورد نظر را انتخا
 
 📋 گزینه‌های موجود:
 • 🤖 معرفی ربات
-${groupManagementText}• 🏭 کارگاه‌ها
+${groupManagementText}• 🏭 راهبران
 ${osatdText}
 
 👆 لطفاً گزینه مورد نظر را انتخاب کنید:
@@ -943,20 +930,7 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
     keyboard = config.getKeyboard ? config.getKeyboard(msg.from.id) : config.keyboard;
   } else if (msg.text === 'ربات' || msg.text === '/ربات' || msg.text === '🤖 ربات') {
     // دستور معرفی ربات - برای همه کاربران
-    reply = `🤖 **معرفی ربات جهادی هوشمند**
-
-📚 **قابلیت‌های اصلی:**
-• 📊 ارزیابی و نظر سنجی
-• 🏫 مدیریت گروه‌ها
-• 📝 گزارش روزانه و ماهانه
-
-🎯 **این ربات برای کمک به فعالیت‌های جهادی طراحی شده است**
-
-💡 **نکات مهم:**
-• همه کاربران می‌توانند از قابلیت‌های عمومی استفاده کنند
-• برای مدیریت پیشرفته، دسترسی ادمین لازم است
-
-⏰ ${getTimeStamp()}`;
+    reply = `ربات جهادی هوشمند 🤖 این ربات برای فعالیت‌های جهادی طراحی شده است 📚 قابلیت‌های اصلی: • مدیریت انجام گزارش روزانه • ارزیابی و نظر سنجی • مدیریت دبیران • گزارش روزانه و ماهانه • گزارش‌گیری از پژوهشها ⏰ ${getTimeStamp()}`;
     keyboard = config.keyboard;
       } else if (msg.text === 'فعال' || msg.text === '/فعال') {
       // دستور فعال - نمایش پنل فعال
@@ -970,13 +944,13 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
 ⏰ ${getTimeStamp()}`;
     keyboard = config.keyboard;
 
-  } else if (msg.text === '/کارگاه' || msg.text === '🏭 کارگاه‌ها') {
-          // دستور کارگاه‌ها - فقط برای مدیر مرکز
+  } else if (msg.text === '/کارگاه' || msg.text === '🏭 راهبران') {
+          // دستور راهبران - فقط برای مدیر مرکز
       if (!isAdmin(msg.from.id)) {
-        reply = '⚠️ فقط مدیر مرکز می‌تواند از کارگاه‌ها استفاده کند.';
+        reply = '⚠️ فقط مدیر مرکز می‌تواند از راهبران استفاده کند.';
       keyboard = config.keyboard;
     } else {
-      // نمایش پنل کارگاه‌ها
+      // نمایش پنل راهبران
       const kargahModule = require('./12kargah');
       // متصل کردن متدهای ارسال پیام
       kargahModule.setSendMessage(sendMessage);
@@ -987,7 +961,7 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
       if (success) {
         return; // ادامه حلقه بدون ارسال پیام معمولی
       } else {
-        reply = '❌ خطا در نمایش کارگاه‌ها';
+        reply = '❌ خطا در نمایش راهبران';
         keyboard = config.keyboard;
       }
     }
@@ -1003,7 +977,7 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
       return;
     }
     
-    // بررسی وضعیت در کارگاه‌ها - اولویت بالا
+    // بررسی وضعیت در راهبران - اولویت بالا
     console.log(`🔍 [POLLING] Checking kargah state for user ${msg.from.id}`);
     
     // متصل کردن متدهای ارسال پیام
@@ -1315,13 +1289,13 @@ function startPolling() {
           } else if (callback_query.data === 'kargah_management') {
             
             console.log('🔄 [POLLING] Kargah management callback detected');
-            // بررسی دسترسی کاربر - فقط ادمین‌ها می‌توانند کارگاه‌ها را مدیریت کنند
+            // بررسی دسترسی کاربر - فقط ادمین‌ها می‌توانند راهبران را مدیریت کنند
             if (!isAdmin(callback_query.from.id)) {
               const config = roleConfig[role];
-              const reply = '⚠️ فقط مدیر مرکز می‌تواند کارگاه‌ها را مدیریت کند.';
+              const reply = '⚠️ فقط مدیر مرکز می‌تواند راهبران را مدیریت کند.';
               await safeSendMessage(callback_query.from.id, reply, config.keyboard);
             } else {
-              // نمایش منوی کارگاه‌ها با استفاده از ماژول کارگاه‌ها
+              // نمایش منوی راهبران با استفاده از ماژول راهبران
               const kargahModule = require('./12kargah');
               // متصل کردن متدهای ارسال پیام
               kargahModule.setSendMessage(sendMessage);
@@ -1331,7 +1305,7 @@ function startPolling() {
               
               if (!success) {
                 const config = roleConfig[role];
-                const reply = '❌ خطا در نمایش منوی کارگاه‌ها';
+                const reply = '❌ خطا در نمایش منوی راهبران';
                 await safeSendMessage(callback_query.from.id, reply, config.keyboard);
               }
             }
@@ -1339,10 +1313,10 @@ function startPolling() {
             
             console.log('🔄 [POLLING] Osatd management callback detected');
             
-            // بررسی کانفیگ - آیا مدیریت استادها فعال است؟
+            // بررسی کانفیگ - آیا مدیریت لیست دبیران فعال است؟
             if (!isOsatdManagementEnabled()) {
               const config = roleConfig[role];
-              const reply = '⚠️ مدیریت استادها در حال حاضر غیرفعال است.';
+              const reply = '⚠️ مدیریت لیست دبیران در حال حاضر غیرفعال است.';
               await safeSendMessage(callback_query.from.id, reply, config.keyboard);
               return;
             }
@@ -1350,12 +1324,12 @@ function startPolling() {
             // بررسی دسترسی کاربر
             if (!hasOsatdManagementAccess('SCHOOL_ADMIN')) {
               const config = roleConfig[role];
-              const reply = '⚠️ شما دسترسی لازم برای مدیریت استادها را ندارید.';
+              const reply = '⚠️ شما دسترسی لازم برای مدیریت لیست دبیران را ندارید.';
               await safeSendMessage(callback_query.from.id, reply, config.keyboard);
               return;
             }
             
-            // نمایش منوی استادها با استفاده از ماژول استادها
+            // نمایش منوی لیست دبیران با استفاده از ماژول استادها
             const osatdModule = require('./10osatd');
             const result = await osatdModule.handleCoachesCallback({
               ...callback_query,
@@ -1366,7 +1340,7 @@ function startPolling() {
               await sendMessageWithInlineKeyboard(callback_query.message.chat.id, result.text, result.keyboard);
             } else {
               const config = roleConfig[role];
-              const reply = '❌ خطا در نمایش منوی استادها';
+              const reply = '❌ خطا در نمایش منوی لیست دبیران';
               await safeSendMessage(callback_query.from.id, reply, config.keyboard);
             }
           } else if ((callback_query.data.startsWith('practice_') && !callback_query.data.includes('_days_settings') && !callback_query.data.includes('_hours_settings')) || 
@@ -1439,7 +1413,7 @@ function startPolling() {
           } else if (callback_query.data.startsWith('kargah_')) {
             console.log('🔄 [POLLING] Kargah callback detected');
             console.log(`🔄 [POLLING] Kargah callback data: ${callback_query.data}`);
-            // پردازش callback های کارگاه‌ها
+            // پردازش callback های راهبران
             const kargahModule = require('./12kargah');
             // متصل کردن متدهای ارسال پیام
             kargahModule.setSendMessage(sendMessage);
@@ -1504,7 +1478,7 @@ function startPolling() {
                      callback_query.data.startsWith('back_to_students_')) {
             console.log('🔄 [POLLING] Coaches callback detected');
             console.log(`🔄 [POLLING] Coaches callback data: ${callback_query.data}`);
-            // پردازش callback های استادها و حضور و غیاب
+            // پردازش callback های لیست دبیران و حضور و غیاب
             const osatdModule = require('./10osatd');
             const result = await osatdModule.handleCoachesCallback(callback_query);
             
@@ -2033,10 +2007,10 @@ ${groupManagementText}👆 لطفاً گزینه مورد نظر را انتخا
           inlineKeyboard.push([{ text: '🏫 مدیریت گروه‌ها', callback_data: 'groups' }]);
         }
         
-        inlineKeyboard.push([{ text: '🏭 کارگاه‌ها', callback_data: 'kargah_management' }]);
-        // اضافه کردن دکمه استادها فقط اگر فعال باشد
+        inlineKeyboard.push([{ text: '🏭 راهبران', callback_data: 'kargah_management' }]);
+        // اضافه کردن دکمه لیست دبیران فقط اگر فعال باشد
         if (hasOsatdManagementAccess('SCHOOL_ADMIN')) {
-          inlineKeyboard.push([{ text: '👨‍🏫 استادها', callback_data: 'osatd_management' }]);
+          inlineKeyboard.push([{ text: '👨‍🏫 لیست دبیران', callback_data: 'osatd_management' }]);
         }
         
         const groupManagementText = hasGroupManagementAccess('SCHOOL_ADMIN') 
@@ -2044,14 +2018,14 @@ ${groupManagementText}👆 لطفاً گزینه مورد نظر را انتخا
           : '';
         
         const osatdText = hasOsatdManagementAccess('SCHOOL_ADMIN') 
-          ? '• 👨‍🏫 استادها\n' 
+          ? '• 👨‍🏫 لیست دبیران\n' 
           : '';
         
         const reply = `🔧 پنل مدیر راهبران
 
 📋 گزینه‌های موجود:
 • 🤖 معرفی ربات
-${groupManagementText}• 🏭 کارگاه‌ها
+${groupManagementText}• 🏭 راهبران
 ${osatdText}
 
 👆 لطفاً گزینه مورد نظر را انتخاب کنید:
@@ -2263,7 +2237,7 @@ ${groups.map((group, index) => `${index + 1}️⃣ ${group.title} (${group.membe
       }
       return;
     } else if (action.startsWith('kargah_')) {
-      // پردازش callback های کارگاه‌ها
+      // پردازش callback های راهبران
       const kargahModule = require('./12kargah');
       // متصل کردن متدهای ارسال پیام
       kargahModule.setSendMessage(sendMessage);

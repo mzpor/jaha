@@ -1,4 +1,4 @@
-// ===== ماژول مدیریت استادها و کارگاه‌ها =====
+// ===== ماژول مدیریت لیست دبیران و کارگاه‌ها =====
 // ⏰ 1404/05/15 ساعت 23:45
 // مدیریت لیست مربی‌ها و ثبت‌نام شده‌ها در کارگاه‌ها
 
@@ -346,7 +346,7 @@ const generateAttendanceKeyboard = (studentId, coachId) => {
 
 // ===== مدیریت callback ها =====
 
-// تابع مدیریت callback های استادها
+// تابع مدیریت callback های لیست دبیران
 const handleCoachesCallback = async (callbackQuery) => {
   try {
     const { data } = callbackQuery;
