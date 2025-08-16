@@ -1,0 +1,152 @@
+
+📥 [BALE] getUpdates SUCCESS
+📥 [BALE] Updates count: 1
+📥 [BALE] First update: {
+  "update_id": 7972,
+  "message": {
+    "message_id": 0,
+    "from": {
+      "id": 1114227010,
+      "is_bot": false,
+      "first_name": "محمد همراه ۱",
+      "last_name": "",
+      "username": "mzpor1"
+    },
+    "date": 1755241149,
+    "chat": {
+      "id": 6376631022,
+      "type": "group",
+      "title": "ربات ۳"
+    },
+    "new_chat_members": [
+      {
+        "id": 1778171143,
+        "is_bot": true,
+        "first_name": "mtbot",
+        "last_name": "",
+        "username": "mtelbot"
+      }
+    ]
+  }
+}
+گیت 
+چهارشنبه 
+
+
+پنج شنبه 
+6صبح بیدار
+شروع ساخت ثبت نام از اول 
+تداخل نقش مربی و کمک مربی 
+8
+مربی وارد شد تایید با نام کارگاه مدیر در سه تلاش 
+شروع کمک مربی . شناخت اوتومات. حل اتصال 
+گیر اول با اسم کمک مربی وسط ثبت نام گیر کرد
+اختلال باز اول تلفن چک میکنه 
+11
+ادغام مربی و کمک مربی داده.. به شدت پیچیده زمان بیدار
+کارگاه مدیر خراب شد بعد داده ها . به زور درست کردم
+کمک مربی اجازه کانفیک میخواست. عجیب بود
+14
+شروع ثبت نام قران اموز.  با  تلفن
+16
+حالا شروع پرداخت . ناقص موند خوابیدم. 
+
+
++++++++++++++++++++++++++++
+خواب ساعت17 تا 22 
+زنگ زدم غذا نبود 
+
+23 حل پرداخت. (2ساعت)/
+نمیشد . استفاده از پایتون. ریست .. بالاخره شد
+اول جستجو کردم پرداخت نبود /پایتون موفق بود / جاوا رو کامل کردم/
+ وصل به کارگاه/درست کردن پیام اخر/ سختگیر میداد به لینک
+
+1
+اوردن ثبت نام کارگاه بزودی 
+پیچیده شد همان ثبت نام قبلی تنظیم 
+
+ماژول ارزیابی شروع. ی عالم تولید الکی کرد
+تلفن نیاز به چک برای تشخیص مربی 
+خواستم مدیریت گروه ها  همه رو خراب کرد 
+فهماندن سخت شد. منم خمار خواب
+بالاخره حل شد واضح مثل مدیر 
+شرط مدیریت گروه فقط روم حضور مربی 
+
+تنظیم بستن گروه بسیار پیچده ترسیدم . و خواب 
+
+جمعه 
+هشت
+زدن کار ها دیروز 
+
+
+
+
+                   SSUUMMMMAARRYY OOFF LLEESSSS CCOOMMMMAANNDDSS
+
+      Commands marked with * may be preceded by a number, _N.
+      Notes in parentheses indicate the behavior if _N is given.
+      A key preceded by a caret indicates the Ctrl key; thus ^K is ctrl-K.
+
+  h  H                 Display this help.
+  q  :q  Q  :Q  ZZ     Exit.
+ ---------------------------------------------------------------------------
+
+                           MMOOVVIINNGG
+
+  e  ^E  j  ^N  CR  *  Forward  one line   (or _N lines).
+  y  ^Y  k  ^K  ^P  *  Backward one line   (or _N lines).
+  ESC-j             *  Forward  one file line (or _N file lines).
+  ESC-k             *  Backward one file line (or _N file lines).
+  f  ^F  ^V  SPACE  *  Forward  one window (or _N lines).
+  b  ^B  ESC-v      *  Backward one window (or _N lines).
+  z                 *  Forward  one window (and set window to _N).
+  w                 *  Backward one window (and set window to _N).
+  ESC-SPACE         *  Forward  one window, but don't stop at end-of-file.
+  ESC-b             *  Backward one window, but don't stop at beginning-of-file.
+  d  ^D             *  Forward  one half-window (and set half-window to _N).
+  u  ^U             *  Backward one half-window (and set half-window to _N).
+  ESC-)  RightArrow *  Right one half screen width (or _N positions).
+  ESC-(  LeftArrow  *  Left  one half screen width (or _N positions).
+  ESC-}  ^RightArrow   Right to last column displayed.
+  ESC-{  ^LeftArrow    Left  to first column.
+  F                    Forward forever; like "tail -f".
+  ESC-F                Like F but stop when search pattern is found.
+  r  ^R  ^L            Repaint screen.
+  R                    Repaint screen, discarding buffered input.
+        ---------------------------------------------------
+        Default "window" is the screen height.
+        Default "half-window" is half of the screen height.
+ ---------------------------------------------------------------------------
+
+                          SSEEAARRCCHHIINNGG
+
+  /_p_a_t_t_e_r_n          *  Search forward for (_N-th) matching line.
+  ?_p_a_t_t_e_r_n          *  Search backward for (_N-th) matching line.
+  n                 *  Repeat previous search (for _N-th occurrence).
+  N                 *  Repeat previous search in reverse direction.
+  ESC-n             *  Repeat previous search, spanning files.
+  ESC-N             *  Repeat previous search, reverse dir. & spanning files.
+  ^O^N  ^On         *  Search forward for (_N-th) OSC8 hyperlink.
+  ^O^P  ^Op         *  Search backward for (_N-th) OSC8 hyperlink.
+  ^O^L  ^Ol            Jump to the currently selected OSC8 hyperlink.
+  ESC-u                Undo (toggle) search highlighting.
+  ESC-U                Clear search highlighting.
+  &_p_a_t_t_e_r_n          *  Display only matching lines.
+        ---------------------------------------------------
+		Search is case-sensitive unless changed with -i or -I.
+        A search pattern may begin with one or more of:
+        ^N or !  Search for NON-matching lines.
+        ^E or *  Search multiple files (pass thru END OF FILE).
+        ^F or @  Start search at FIRST file (for /) or last file (for ?).
+        ^K       Highlight matches, but don't move (KEEP position).
+        ^R       Don't use REGULAR EXPRESSIONS.
+        ^S _n     Search for match in _n-th parenthesized subpattern.
+        ^W       WRAP search if no match found.
+        ^L       Enter next character literally into pattern.
+ ---------------------------------------------------------------------------
+
+                           JJUUMMPPIINNGG
+
+  g  <  ESC-<       *  Go to first line in file (or line _N).
+  G  >  ESC->       *  Go to last line in file (or line _N).
+

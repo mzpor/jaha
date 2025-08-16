@@ -1,0 +1,5 @@
+node_modules/
+ARSHIVE/
+lib/
+.env
+# data/  # این خط حذف شد - فایل‌های data باید در git باشند
