@@ -108,15 +108,19 @@ class KargahModule {
     
     // نمایش لیست راهبران
     if (this.workshops.coach && Object.keys(this.workshops.coach).length > 0) {
+      let counter = 1;
       for (const [coachId, coach] of Object.entries(this.workshops.coach)) {
         const instructorName = coach.name || 'نامشخص';
-        const cost = coach.cost || 'نامشخص';
-        const level = coach.level || '';
-        const emoji = level.includes('پیشرفته') ? '🔥' : level.includes('متوسط') ? '⚡' : '🌱';
+        const region = coach.region || 'نامشخص';
+        const province = coach.province || 'نامشخص';
+        
+        // نمایش: شماره - نام راهبر پهنه
+        const displayText = `${counter}- ${instructorName} ${region}`;
         keyboard.push([{
-          text: `${emoji} ${instructorName} - ${cost}`,
+          text: displayText,
           callback_data: `kargah_view_coach_${coachId}`
         }]);
+        counter++;
       }
     }
     
@@ -128,9 +132,10 @@ class KargahModule {
   
   getWorkshopEditKeyboard(workshopId) {
     const keyboard = [
-      [{ text: '✏️ ویرایش نام مربی', callback_data: `kargah_edit_instructor_${workshopId}` }],
-      [{ text: '📱 ویرایش تلفن مربی', callback_data: `kargah_edit_phone_${workshopId}` }],
-      [{ text: '🔗 ویرایش منطقه', callback_data: `kargah_edit_link_${workshopId}` }],
+      [{ text: '✏️ ویرایش نام راهبر', callback_data: `kargah_edit_instructor_${workshopId}` }],
+      [{ text: '📱 ویرایش تلفن راهبر', callback_data: `kargah_edit_phone_${workshopId}` }],
+      [{ text: '🌍 ویرایش پهنه راهبر', callback_data: `kargah_edit_region_${workshopId}` }],
+      [{ text: '🏛️ ویرایش استان راهبر', callback_data: `kargah_edit_province_${workshopId}` }],
       [{ text: '🗑️ حذف راهبر', callback_data: `kargah_delete_${workshopId}` }],
       [{ text: '🔙 بازگشت', callback_data: 'kargah_list' }]
     ];
@@ -147,13 +152,13 @@ class KargahModule {
       text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.\nبرای شروع، ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید اضافه کنید:`;
     } else {
       text = `🏭 *مدیریت ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n📋 لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}های ثبت شده:\n`;
+      let counter = 1;
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
-        const cost = workshop.cost || 'نامشخص';
-        const level = workshop.level || '';
-        const emoji = level.includes('پیشرفته') ? '🔥' : level.includes('متوسط') ? '⚡' : '🌱';
-        // نمایش نام مربی به جای ID راهبر
-        text += `${emoji} *${instructorName}* - ${cost}\n`;
+        const region = workshop.region || 'نامشخص';
+        // نمایش: شماره - نام راهبر پهنه
+        text += `${counter}- *${instructorName}* ${region}\n`;
+        counter++;
       }
       text += `\nبرای مشاهده جزئیات و ویرایش، روی ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} مورد نظر کلیک کنید:`;
     }
@@ -272,14 +277,16 @@ class KargahModule {
       text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n❌ هیچ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}ی ثبت نشده است.`;
     } else {
       text = `📋 *لیست ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}‌ها*\n\n`;
+      let counter = 1;
       for (const [coachId, coach] of Object.entries(this.workshops.coach)) {
         const instructorName = coach.name || 'نامشخص';
-        const cost = coach.cost || 'نامشخص';
-        const link = coach.link || 'نامشخص';
-        // نمایش نام مربی به جای ID راهبر
-        text += `🏭 *${instructorName}*\n`;
-        text += `💰 هزینه: ${cost}\n`;
-        text += `🔗 لینک: ${link}\n\n`;
+        const region = coach.region || 'نامشخص';
+        const province = coach.province || 'نامشخص';
+        // نمایش: شماره - نام راهبر پهنه
+        text += `${counter}- *${instructorName}*\n`;
+        text += `🌍 پهنه: ${region}\n`;
+        text += `🏛️ استان: ${province}\n\n`;
+        counter++;
       }
     }
     
@@ -320,27 +327,26 @@ class KargahModule {
         
         console.log(`✅ Accepting leader name: "${text.trim()}"`);
         this.tempData[userId].instructor_name = text.trim();
-        this.userStates[userId] = 'kargah_add_cost';
+        this.userStates[userId] = 'kargah_add_region';
         
-        const responseText = `✅ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME} ثبت شد: *${text.trim()}*\n\n💰 لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.COST} ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} را وارد کنید:\n\n📝 مثال‌های صحیح:\n• 500,000 تومان\n• 750000 تومان\n• ۱,۰۰۰,۰۰۰ تومان\n• 1000000 تومان`;
+        const responseText = `✅ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME} ثبت شد: *${text.trim()}*\n\n🌍 لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.REGION} راهبر را وارد کنید:\n\n📝 مثال‌های صحیح:\n• پهنه 1\n• پهنه 2\n• پهنه 3\n• پهنه 4`;
         await this.sendMessage(chatId, responseText);
         
-      } else if (userState === 'kargah_add_cost') {
-        // بررسی اعتبار هزینه
-        const normalizedCost = this.normalizeCostText(text);
-        if (!normalizedCost || normalizedCost === 'نامشخص') {
-          await this.sendMessage(chatId, '❌ هزینه وارد شده نامعتبر است. لطفاً دوباره وارد کنید:\n\nمثال‌های صحیح:\n• 500,000 تومان\n• 750000 تومان\n• ۱,۰۰۰,۰۰۰ تومان');
+      } else if (userState === 'kargah_add_region') {
+        // بررسی اعتبار پهنه
+        if (!text || text.trim().length === 0) {
+          await this.sendMessage(chatId, '❌ پهنه راهبر نمی‌تواند خالی باشد. لطفاً پهنه را وارد کنید:\n\n📝 مثال‌های صحیح:\n• پهنه 1\n• پهنه 2\n• پهنه 3\n• پهنه 4');
           return true;
         }
         
-        this.tempData[userId].cost = normalizedCost;
+        this.tempData[userId].region = text.trim();
         this.userStates[userId] = 'kargah_add_phone';
         
-        const responseText = `✅ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.COST} ثبت شد: *${normalizedCost}*\n\n📱 لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE} را وارد کنید (اختیاری):\n\n📝 مثال‌های صحیح:\n• 09123456789\n• 0912 345 6789\n• 0 برای رد کردن`;
+        const responseText = `✅ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.REGION} ثبت شد: *${text.trim()}*\n\n📱 لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE} را وارد کنید (اختیاری):\n\n📝 مثال‌های صحیح:\n• 09123456789\n• 0912 345 6789\n• 0 برای رد کردن`;
         await this.sendMessage(chatId, responseText);
         
       } else if (userState === 'kargah_add_phone') {
-        // پردازش شماره تلفن مربی (اختیاری)
+        // پردازش شماره تلفن راهبر (اختیاری)
         let instructorPhone = '';
         if (text && text.trim() !== '0' && text.trim() !== '') {
           // تمیز کردن شماره تلفن
@@ -355,19 +361,19 @@ class KargahModule {
         }
         
         this.tempData[userId].instructor_phone = instructorPhone;
-        this.userStates[userId] = 'kargah_add_link';
+        this.userStates[userId] = 'kargah_add_province';
         
         const phoneStatus = instructorPhone ? `✅ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE}: *${instructorPhone}*` : `⏭️ ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE} رد شد`;
-        const responseText = `${phoneStatus}\n\n🔗 لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.LINK} را وارد کنید:\n\n📝 مثال‌های صحیح:\n• https://t.me/workshop_group\n• https://t.me/+abcdefghijk\n• t.me/workshop_group`;
+        const responseText = `${phoneStatus}\n\n🏛️ لطفاً ${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PROVINCE} را وارد کنید:\n\n📝 مثال‌های صحیح:\n• تهران\n• اصفهان\n• مشهد\n• شیراز\n• تبریز`;
         await this.sendMessage(chatId, responseText);
         
-      } else if (userState === 'kargah_add_link') {
-        // حذف کامل اعتبارسنجی لینک - هر متنی پذیرفته شود
-        this.tempData[userId].link = text;
+      } else if (userState === 'kargah_add_province') {
+        // حذف کامل اعتبارسنجی استان - هر متنی پذیرفته شود
+        this.tempData[userId].province = text;
         
         // نمایش خلاصه راهبر قبل از ذخیره
         const phoneDisplay = this.tempData[userId].instructor_phone ? `\n📱 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE}:* ${this.tempData[userId].instructor_phone}` : `\n📱 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PHONE}:* وارد نشده`;
-        const summaryText = `📋 *خلاصه ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید*\n\n👨‍🏫 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME}:* ${this.tempData[userId].instructor_name}${phoneDisplay}\n💰 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.COST}:* ${this.tempData[userId].cost}\n🔗 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.LINK}:* ${this.tempData[userId].link}\n\n✅ آیا می‌خواهید این ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} را ذخیره کنید؟`;
+        const summaryText = `📋 *خلاصه ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} جدید*\n\n👨‍🏫 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME}:* ${this.tempData[userId].instructor_name}${phoneDisplay}\n🌍 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.REGION}:* ${this.tempData[userId].region}\n🏛️ *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PROVINCE}:* ${this.tempData[userId].province}\n\n✅ آیا می‌خواهید این ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} را ذخیره کنید؟`;
         
         const keyboard = [
           [{ text: '✅ بله، ذخیره کن', callback_data: 'kargah_confirm_save' }],
@@ -440,14 +446,14 @@ class KargahModule {
           let text = `🏭 *جزئیات ${workshopType === 'coach' ? 'راهبر' : 'کمک مربی'}*\n\n`;
     text += `👨‍🏫 *نام ${workshopType === 'coach' ? 'مربی' : 'کمک مربی'}:* ${instructorName}\n`;
     text += `📱 *تلفن:* ${instructorPhone}\n`;
-    if (workshopType === 'coach') {
-      text += `💰 *هزینه:* ${cost}\n`;
-      text += `📝 *توضیحات:* ${description}\n`;
-      text += `👥 *ظرفیت:* ${capacity} نفر\n`;
-      text += `⏱️ *مدت دوره:* ${duration}\n`;
-      text += `📊 *سطح:* ${level}\n`;
-      text += `🔗 *لینک گروه:* ${link}\n`;
-    }
+         if (workshopType === 'coach') {
+       text += `🌍 *پهنه راهبر:* ${workshop.region || 'نامشخص'}\n`;
+       text += `🏛️ *استان راهبر:* ${workshop.province || 'نامشخص'}\n`;
+       text += `📝 *توضیحات:* ${description}\n`;
+       text += `👥 *ظرفیت:* ${capacity} نفر\n`;
+       text += `⏱️ *مدت دوره:* ${duration}\n`;
+       text += `📊 *سطح:* ${level}\n`;
+     }
     text += `🆔 *کد:* ${workshopId}`;
     
     const replyMarkup = this.getWorkshopEditKeyboard(workshopId);
@@ -879,12 +885,12 @@ class KargahModule {
       const coachId = String(Object.keys(this.workshops.coach || {}).length + 1);
       const workshopData = { ...this.tempData[userId] };
       
-      // تبدیل فیلدهای قدیمی به جدید
+      // تبدیل فیلدهای جدید
       const newCoachData = {
         name: workshopData.instructor_name,
         phone: workshopData.instructor_phone,
-        cost: workshopData.cost,
-        link: workshopData.link,
+        region: workshopData.region,
+        province: workshopData.province,
         description: workshopData.description || WORKSHOP_CONFIG.DEFAULTS.DESCRIPTION,
         capacity: workshopData.capacity || WORKSHOP_CONFIG.DEFAULTS.CAPACITY,
         duration: workshopData.duration || WORKSHOP_CONFIG.DEFAULTS.DURATION,
@@ -914,7 +920,7 @@ class KargahModule {
       }
       
       // نمایش پیام موفقیت
-      const responseText = `✅ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} *${workshopData.instructor_name}* با موفقیت اضافه شد!\n\n🆔 *کد ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}:* coach_${coachId}\n👨‍🏫 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME}:* ${workshopData.instructor_name}\n💰 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.COST}:* ${workshopData.cost}\n🔗 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.LINK}:* ${workshopData.link}`;
+      const responseText = `✅ ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME} *${workshopData.instructor_name}* با موفقیت اضافه شد!\n\n🆔 *کد ${WORKSHOP_CONFIG.WORKSHOP_DISPLAY_NAME}:* coach_${coachId}\n👨‍🏫 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.INSTRUCTOR_NAME}:* ${workshopData.instructor_name}\n🌍 *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.REGION}:* ${workshopData.region}\n🏛️ *${WORKSHOP_CONFIG.FIELD_DISPLAY_NAMES.PROVINCE}:* ${workshopData.province}`;
       const replyMarkup = this.getWorkshopManagementKeyboard();
       await this.editMessageWithInlineKeyboard(chatId, messageId, responseText, replyMarkup.inline_keyboard);
       
@@ -971,15 +977,15 @@ class KargahModule {
       
       // ساخت کیبورد برای انتخاب راهبر
       const keyboard = [];
-      for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
+              for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
-        const cost = workshop.cost || 'نامشخص';
+        const region = workshop.region || 'نامشخص';
         
         // فیلتر کردن راهبرهای نامعتبر (با نام‌های کوتاه یا نامعتبر)
         if (instructorName.length > 2 && instructorName !== 'نامشخص' && 
-            cost.length > 5 && cost !== 'نامشخص') {
+            region && region !== 'نامشخص') {
           keyboard.push([{
-            text: `📚 ${instructorName} - ${cost}`,
+            text: `📚 ${instructorName} ${region}`,
             callback_data: `student_select_workshop_coach_${coachId}`
           }]);
         }
@@ -992,7 +998,7 @@ class KargahModule {
         this.sendMessageWithInlineKeyboard(chatId, text, replyMarkup.inline_keyboard);
       } else {
         const { sendMessageWithInlineKeyboard } = require('./4bale');
-        sendMessageWithInlineKeyboard(chatId, text, replyMarkup.inline_keyboard);
+        this.sendMessageWithInlineKeyboard(chatId, text, replyMarkup.inline_keyboard);
       }
     }
   }
@@ -1017,14 +1023,14 @@ class KargahModule {
     }
     
     const instructorName = workshop.name || 'نامشخص';
-    const cost = workshop.cost || 'نامشخص';
-    const link = workshop.link || 'نامشخص';
+    const region = workshop.region || 'نامشخص';
+    const province = workshop.province || 'نامشخص';
     
     const text = `📚 **جزئیات کلاس انتخاب شده**
 
-🏭 **مربی:** ${instructorName}
-💰 **هزینه:** ${cost}
-🔗 **لینک گروه:** ${link}
+🏭 **راهبر:** ${instructorName}
+🌍 **پهنه:** ${region}
+🏛️ **استان:** ${province}
 📝 **توضیحات:** ${workshop.description || 'توضیحات موجود نیست'}
 ⏱️ **مدت دوره:** ${workshop.duration || 'نامشخص'}
 👥 **ظرفیت:** ${workshop.capacity || 'نامشخص'} نفر
@@ -1064,17 +1070,19 @@ class KargahModule {
     }
     
     const instructorName = workshop.name || 'نامشخص';
-    const cost = workshop.cost || 'نامشخص';
+    const region = workshop.region || 'نامشخص';
+    const province = workshop.province || 'نامشخص';
     
     const text = `💳 **پرداخت و ثبت‌نام**
 
 🏭 **کلاس انتخاب شده:** ${instructorName}
-💰 **هزینه:** ${cost}
+🌍 **پهنه:** ${region}
+🏛️ **استان:** ${province}
 📝 **توضیحات:** ${workshop.description || 'توضیحات موجود نیست'}
 
 ✅ **مراحل تکمیل ثبت‌نام:**
-1️⃣ پرداخت هزینه کلاس
-2️⃣ دریافت لینک گروه کلاس
+1️⃣ انتخاب کلاس
+2️⃣ تکمیل اطلاعات
 3️⃣ شروع یادگیری
 
 برای تکمیل ثبت‌نام، لطفاً روی دکمه پرداخت کلیک کنید.`;
@@ -1113,11 +1121,11 @@ class KargahModule {
     } else {
       // ساخت کیبورد برای انتخاب راهبر
       const keyboard = [];
-      for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
+              for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
-        const cost = workshop.cost || 'نامشخص';
+        const region = workshop.region || 'نامشخص';
         keyboard.push([{
-          text: `📚 ${instructorName} - ${cost}`,
+          text: `📚 ${instructorName} ${region}`,
           callback_data: `student_select_workshop_coach_${coachId}`
         }]);
       }
@@ -1176,13 +1184,13 @@ class KargahModule {
       const keyboard = [];
       for (const [coachId, workshop] of Object.entries(this.workshops.coach)) {
         const instructorName = workshop.name || 'نامشخص';
-        const cost = workshop.cost || 'نامشخص';
+        const region = workshop.region || 'نامشخص';
         
         // فیلتر کردن راهبرهای نامعتبر (با نام‌های کوتاه یا نامعتبر)
         if (instructorName.length > 2 && instructorName !== 'نامشخص' && 
-            cost.length > 5 && cost !== 'نامشخص') {
+            region && region !== 'نامشخص') {
           keyboard.push([{
-            text: `📚 ${instructorName} - ${cost}`,
+            text: `📚 ${instructorName} ${region}`,
             callback_data: `student_select_workshop_coach_${coachId}`
           }]);
         }
@@ -1215,25 +1223,23 @@ class KargahModule {
     }
     
     const instructorName = workshop.name || 'نامشخص';
-    const cost = workshop.cost || 'نامشخص';
-    const link = workshop.link || 'نامشخص';
+    const region = workshop.region || 'نامشخص';
+    const province = workshop.province || 'نامشخص';
     
     const text = `🎉 **ثبت‌نام با موفقیت انجام شد!**
 
 🏭 **کلاس انتخاب شده:** ${instructorName}
-💰 **هزینه:** ${cost}
-🔗 **لینک گروه:** ${link}
+🌍 **پهنه:** ${region}
+🏛️ **استان:** ${province}
 
 ✅ **مراحل بعدی:**
-1️⃣ روی لینک گروه کلیک کنید
-2️⃣ در گروه عضو شوید
-3️⃣ با مربی تماس بگیرید
-4️⃣ شروع یادگیری کنید
+1️⃣ با راهبر تماس بگیرید
+2️⃣ اطلاعات تکمیلی را دریافت کنید
+3️⃣ شروع یادگیری کنید
 
 🌟 **موفق باشید!**`;
     
     const keyboard = [
-      [{ text: '🔗 عضویت در گروه', url: link }],
       [{ text: '🏠 بازگشت به منو', callback_data: 'student_back_to_menu' }]
     ];
     
