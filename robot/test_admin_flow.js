@@ -13,7 +13,7 @@ async function testAdminFlow() {
     const { registrationModule } = require('./registration_module');
     
     // تست تشخیص مدیران
-    const adminUsers = [1638058362, 1114227010, 1775811194]; // مدیران مدرسه
+    const adminUsers = [1638058362, 1114227010, 1775811194]; // مدیران مرکز
     const coachUsers = [574330749]; // مربی
     const assistantUsers = [2045777722]; // کمک مربی
     const studentUsers = [999999999]; // قرآن آموز
