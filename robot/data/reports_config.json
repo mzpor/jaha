@@ -4,16 +4,16 @@
   "updatedBy": "admin",
   "updatedFrom": "ربات",
   "robotOnline": true,
-  "lastRobotPing": "2025-08-16T04:36:52.126Z",
+  "lastRobotPing": "2025-08-16T04:39:24.154Z",
   "systemStatus": {
     "robot": true,
     "gateway": true,
     "website": true,
-    "lastUpdate": "2025-08-16T04:36:52.130Z",
+    "lastUpdate": "2025-08-16T04:39:24.159Z",
     "lastChange": {
       "system": "robot",
       "status": true,
-      "timestamp": "2025-08-16T04:36:52.130Z",
+      "timestamp": "2025-08-16T04:39:24.159Z",
       "action": "آنلاین شد"
     }
   },
