@@ -5,7 +5,7 @@ const path = require('path');
 
 // تنظیمات
 const BOT_TOKEN = "1778171143:vD6rjJXAYidLL7hQyQkBeu5TJ9KpRd4zAKegqUt3";
-const ADMIN_ID = 1638058362; // مدیر مدرسه
+const ADMIN_ID = 1638058362; // مدیر مرکز
 const REPORT_GROUP_ID = 5537396165; // گروه گزارش جهاد
 
 // راه‌اندازی Express
@@ -27,7 +27,7 @@ async function loadSettings() {
   } catch (error) {
     // تنظیمات پیش‌فرض
     const defaultSettings = {
-      schoolName: "مدرسه تلاوت",
+      schoolName: "مرکز جهادی",
       registrationOpen: true,
       maxStudents: 100,
       adminMessage: "سلام مدیر عزیز! 👋"
@@ -110,7 +110,7 @@ ${settings.adminMessage}
 
 bot.command('settings', async (ctx) => {
   if (ctx.from.id !== ADMIN_ID) {
-    return ctx.reply('❌ فقط مدیر مدرسه می‌تواند تنظیمات را ببیند');
+    return ctx.reply('❌ فقط مدیر مرکز می‌تواند تنظیمات را ببیند');
   }
   
   const settings = await loadSettings();

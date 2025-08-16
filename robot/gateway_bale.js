@@ -141,7 +141,7 @@ async function loadSettings() {
   } catch (error) {
     // تنظیمات پیش‌فرض
     const defaultSettings = {
-      schoolName: "مدرسه تلاوت",
+      schoolName: "مرکز جهادی",
       registrationOpen: true,
       maxStudents: 100,
       adminMessage: "سلام مدیر عزیز! 👋"

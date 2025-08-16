@@ -329,7 +329,7 @@ class RoleManager {
   
   getRoleDisplayName(role) {
     const names = {
-      'SCHOOL_ADMIN': 'مدیر مدرسه',
+              'SCHOOL_ADMIN': 'مدیر مرکز',
       'COACH': 'مربی',
       'ASSISTANT': 'کمک مربی',
       'STUDENT': 'فعال'
@@ -396,7 +396,7 @@ class RoleManager {
       });
       
       const keyboard = [
-        [{ text: '🛡️ مدیر مدرسه', callback_data: 'role_add_final_SCHOOL_ADMIN' }],
+        [{ text: '🛡️ مدیر مرکز', callback_data: 'role_add_final_SCHOOL_ADMIN' }],
         [{ text: '🏋️ مربی', callback_data: 'role_add_final_COACH' }],
         [{ text: '👨‍🏫 کمک مربی', callback_data: 'role_add_final_ASSISTANT' }],
         [{ text: '🔙 بازگشت', callback_data: 'role_main_menu' }]

@@ -1,7 +1,7 @@
 {
   "name": "balefastrender",
   "version": "1.0.0",
-  "description": "ربات بله مدرسه تلاوت با پنل مدیر",
+  "description": "ربات بله مرکز جهادی با پنل مدیر",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -16,7 +16,7 @@
     "admin",
     "panel"
   ],
-  "author": "مدرسه تلاوت",
+  "author": "مرکز جهادی",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.2",

@@ -432,7 +432,7 @@ class RegistrationModule {
             return true;
         }
         
-        if (messageText === 'قرآن‌آموز' || messageText === 'قرآن آموز') {
+        if (messageText === 'فعال' || messageText === 'فعال جهادی') {
             console.log(`📖 [15REG] دکمه قرآن‌آموز فشرده شد`);
             await this.handleQuranStudentButton(artificialCtx);
             return true;
@@ -1490,7 +1490,7 @@ class RegistrationModule {
             const text = `🎯 **مدیریت گروه‌های کمک مربی**
 
 📋 **گروه‌های شما:**
-• گروه قرآن کریم (2 گروه)
+        • گروه جهادی (2 گروه)
 • گروه حفظ موضوعی
 
 ⚠️ **نکته:** فقط گروه‌هایی که شما ادمین هستید قابل مدیریت هستند.
@@ -1498,7 +1498,7 @@ class RegistrationModule {
 👆 **لطفاً گروه مورد نظر را انتخاب کنید:**`;
             
             const keyboard = [
-                [{ text: '📚 گروه قرآن کریم', callback_data: 'assistant_group_quran' }],
+                [{ text: '📚 گروه جهادی', callback_data: 'assistant_group_quran' }],
                 [{ text: '📖 گروه حفظ موضوعی', callback_data: 'assistant_group_hifz' }],
                 [{ text: '🔙 بازگشت', callback_data: 'assistant_back' }]
             ];
@@ -1524,7 +1524,7 @@ class RegistrationModule {
             const text = `🎯 **مدیریت گروه‌های مربی**
 
 📋 **گروه‌های شما:**
-• گروه قرآن کریم (3 گروه)
+        • گروه جهادی (3 گروه)
 • گروه حفظ موضوعی
 • گروه تفسیر
 
@@ -1533,7 +1533,7 @@ class RegistrationModule {
 👆 **لطفاً گروه مورد نظر را انتخاب کنید:**`;
             
             const keyboard = [
-                [{ text: '📚 گروه قرآن کریم', callback_data: 'coach_group_quran' }],
+                [{ text: '📚 گروه جهادی', callback_data: 'coach_group_quran' }],
                 [{ text: '📖 گروه حفظ موضوعی', callback_data: 'coach_group_hifz' }],
                 [{ text: '📖 گروه تفسیر', callback_data: 'coach_group_tafsir' }],
                 [{ text: '🔙 بازگشت', callback_data: 'back' }]

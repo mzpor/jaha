@@ -236,7 +236,7 @@ async function addMember(chatId, chatTitle, userId, userName) {
       saveMembersData(membersData);
       
       // پیام عضویت جدید
-      const thankText = `✅ قرآن آموز ${userName} عضو شد`;
+              const thankText = `✅ عضو جهادی ${userName} عضو شد`;
       await sendMessage(chatId, thankText);
       
       // گزارش لیست به‌روزرسانی شده (شامل ادمین‌ها و کاربران)
@@ -249,7 +249,7 @@ async function addMember(chatId, chatTitle, userId, userName) {
     } else {
       // عضو قدیمی - پیام مجدد
       console.log(`👤 ${userName} is already a member, thanking them`);
-      const thankText = `✅ قرآن آموز ${userName} مجدد عوض شد`;
+              const thankText = `✅ عضو جهادی ${userName} مجدد عوض شد`;
       await sendMessage(chatId, thankText);
       
       // گزارش لیست به‌روزرسانی شده (شامل ادمین‌ها و کاربران)
@@ -286,13 +286,13 @@ async function reportUpdatedMembersList(chatId, chatTitle, newMemberName) {
 ${members.admins.map((admin, index) => `${index + 1}. ${admin}`).join('\n')}
 ${members.admins.length === 0 ? '📝 هیچ ادمینی یافت نشد.' : ''}
 
-👥 قرآن آموزان (${members.totalMembers}):
+        👥 اعضای جهادی (${members.totalMembers}):
 ${members.members.map((member, index) => `${index + 1}. ${member}`).join('\n')}
 ${members.members.length === 0 ? '📝 هنوز قرآن آموزی ثبت نشده است.' : ''}
 
 📊 آمار کلی:
 👑 ادمین: ${members.totalAdmins}
-👥 قرآن آموز: ${members.totalMembers}
+        👥 عضو جهادی: ${members.totalMembers}
 📊 کل: ${members.totalAdmins + members.totalMembers}
 ⏰ ${new Date().toLocaleString('fa-IR')}`;
 
@@ -364,10 +364,10 @@ async function checkAndUpdateMembersList(chatId, chatTitle) {
 
 ${regularMembers.map((member, index) => `${index + 1}. ${member.name}`).join('\n')}
 
-📊 تعداد قرآن آموزان: ${regularMembers.length}
+📊 تعداد اعضای جهادی: ${regularMembers.length}
 📊 کل اعضا: ${groupMembers.length}
 
-🔍 قرآن آموزان عزیز،
+🔍 اعضای جهادی عزیز،
 برای ثبت در /لیست لطفا /عضو شوید.
 
 ⏰ اکنون: ${new Date().toLocaleTimeString('fa-IR')}
@@ -375,15 +375,15 @@ ${regularMembers.map((member, index) => `${index + 1}. ${member.name}`).join('\n
         
         await sendMessage(chatId, text);
       } else {
-        const text = `📝 هیچ قرآن آموزی در این گروه ثبت نشده است.
+        const text = `        📝 هیچ عضوی در این گروه ثبت نشده است.
 
-لطفاً قرآن آموزان /عضو شوید تا در لیست ثبت شوند.`;
+لطفاً اعضا /عضو شوید تا در لیست ثبت شوند.`;
         
         await sendMessage(chatId, text);
       }
     } else {
-      const text = `📝 لیست خالی است
-لطفاً قرآن آموزان /عضو شوید تا لیست تهیه شود.`;
+      const text = `      📝 لیست خالی است
+لطفاً اعضا /عضو شوید تا لیست تهیه شود.`;
       
       await sendMessage(chatId, text);
     }
@@ -396,7 +396,7 @@ ${groupMembers.map((member, index) => `${index + 1}. ${member.name}`).join('\n')
 
 📊 تعداد اعضا: ${groupMembers.length}
 
-🔍 قرآن آموزان عزیز،
+🔍 اعضای جهادی عزیز،
 برای ثبت در /لیست لطفا /عضو شوید.
 
 ⏰ اکنون: ${new Date().toLocaleTimeString('fa-IR')}
@@ -408,22 +408,22 @@ ${groupMembers.map((member, index) => `${index + 1}. ${member.name}`).join('\n')
 
 // اعلام فعال شدن ربات برای ادمین‌ها - به‌روزرسانی شده در 1404/05/13 ساعت 10:10
 async function announceBotActivationForAdmin(chatId, chatTitle) {
-  const text = `🤖 ربات قرآنی فعال شد
+  const text = `🤖 ربات جهادی فعال شد
 
 📚 وظایف ربات:
-• ثبت قرآن آموزان
+• ثبت اعضای جهادی
 • مدیریت لیست اعضا
 • گزارش‌گیری
 • حضور و غیاب
 
 👑 دستورات مدیران و مربی‌ها:
 /ربات - معرفی ربات
-/لیست - نمایش لیست قرآن آموزان
+/لیست - نمایش لیست اعضا
 
-👥 دستورات قرآن آموزان:
+👥 دستورات اعضا:
 /عضو - ثبت عضویت
 
-📖 قرآن آموزان عزیز، لطفاً /عضو شوید تا در لیست ثبت شوید.`;
+📖 اعضای عزیز، لطفاً /عضو شوید تا در لیست ثبت شوید.`;
   
   await sendMessage(chatId, text);
 }
