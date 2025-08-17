@@ -4,6 +4,7 @@
 const fs = require('fs');
 const { hasPermission } = require('./6mid');
 const { addCoachByPhone, removeCoachByPhone, WORKSHOP_CONFIG } = require('./3config.js');
+const path = require('path');
 
 class KargahModule {
   constructor() {
@@ -125,7 +126,10 @@ class KargahModule {
     }
     
     // دکمه‌های عملیات
-            keyboard.push([{ text: '📝 اضافه کردن راهبر', callback_data: 'kargah_add' }]);
+    keyboard.push([{ text: '📝 اضافه کردن راهبر', callback_data: 'kargah_add' }]);
+    
+    // اضافه کردن دکمه مدیریت دبیران
+    keyboard.push([{ text: '👥 مدیریت دبیران', callback_data: 'kargah_manage_assistants' }]);
     
     return { inline_keyboard: keyboard };
   }
@@ -184,6 +188,10 @@ class KargahModule {
       return this.handleAddWorkshopStep(chatId, userId, text, userState);
     } else if (userState.startsWith('kargah_edit_')) {
       return this.handleEditWorkshopStep(chatId, userId, text, userState);
+    } else if (userState.startsWith('kargah_add_assistant_')) {
+      return this.handleAddAssistantStep(chatId, userId, text, userState);
+    } else if (userState.startsWith('kargah_edit_assistant_')) {
+      return this.handleEditAssistantStep(chatId, userId, text, userState);
     } else if (text === '/کارگاه') {
       return this.handleKargahCommand(chatId, userId);
     }
@@ -238,7 +246,9 @@ class KargahModule {
       } else if (data === 'kargah_back') {
         return this.handleBackToMain(chatId, messageId, callbackQueryId);
       } else if (data === 'kargah_list') {
-        return this.handleListWorkshops(chatId, messageId, callbackQueryId);
+        return this.handleListWorkshops(chatId, messageId, userId, callbackQueryId);
+      } else if (data === 'kargah_manage_assistants') {
+        return this.handleManageAssistants(chatId, messageId, userId, callbackQueryId);
       } else if (data.startsWith('kargah_view_')) {
         const workshopId = data.replace('kargah_view_', '');
         return this.handleViewWorkshop(chatId, messageId, workshopId, callbackQueryId);
@@ -261,6 +271,22 @@ class KargahModule {
         return this.handleConfirmSaveWorkshop(chatId, messageId, userId, callbackQueryId);
       } else if (data === 'kargah_restart_add') {
         return this.handleRestartAddWorkshop(chatId, messageId, userId, callbackQueryId);
+      } else if (data.startsWith('kargah_view_assistant_')) {
+        const assistantId = data.replace('kargah_view_assistant_', '');
+        return this.handleViewAssistant(chatId, messageId, userId, assistantId, callbackQueryId);
+      } else if (data === 'kargah_add_assistant') {
+        return this.handleAddAssistant(chatId, messageId, userId, callbackQueryId);
+      } else if (data.startsWith('kargah_edit_assistant_name_')) {
+        const assistantId = data.replace('kargah_edit_assistant_name_', '');
+        return this.handleEditAssistantName(chatId, messageId, userId, assistantId, callbackQueryId);
+      } else if (data.startsWith('kargah_delete_assistant_')) {
+        const assistantId = data.replace('kargah_delete_assistant_', '');
+        return this.handleDeleteAssistant(chatId, messageId, userId, assistantId, callbackQueryId);
+      } else if (data.startsWith('kargah_confirm_delete_assistant_')) {
+        const assistantId = data.replace('kargah_confirm_delete_assistant_', '');
+        return this.handleConfirmDeleteAssistant(chatId, messageId, userId, assistantId, callbackQueryId);
+      } else if (data === 'kargah_confirm_add_assistant') {
+        return this.handleConfirmAddAssistant(chatId, messageId, userId, callbackQueryId);
       } else {
         console.warn(`Unknown kargah callback data: ${data}`);
         return false;
@@ -1287,6 +1313,306 @@ class KargahModule {
   }
   getUserState(userId) {
     return this.userStates[userId] || '';
+  }
+
+  // مدیریت دبیران
+  async handleManageAssistants(chatId, messageId, userId, callbackQueryId) {
+    try {
+      // بارگذاری دبیران از فایل کانفیگ
+      const { USERS } = require('./3config');
+      const assistants = Object.entries(USERS)
+        .filter(([id, user]) => user.role === 'ASSISTANT')
+        .map(([id, user]) => ({ id, name: user.name }));
+
+      let text = '';
+      if (assistants.length === 0) {
+        text = '👥 *مدیریت دبیران*\n\n❌ هیچ دبیری یافت نشد.';
+      } else {
+        text = '👥 *مدیریت دبیران*\n\n📋 لیست دبیران موجود:\n';
+        let counter = 1;
+        for (const assistant of assistants) {
+          text += `${counter}- *${assistant.name}*\n`;
+          counter++;
+        }
+        text += '\nبرای مشاهده جزئیات و مدیریت، روی دبیر مورد نظر کلیک کنید:';
+      }
+
+      const keyboard = [];
+      
+      // نمایش لیست دبیران
+      if (assistants.length > 0) {
+        for (const assistant of assistants) {
+          keyboard.push([{
+            text: `👤 ${assistant.name}`,
+            callback_data: `kargah_view_assistant_${assistant.id}`
+          }]);
+        }
+      }
+
+      // دکمه‌های عملیات
+      keyboard.push([{ text: '➕ اضافه کردن دبیر جدید', callback_data: 'kargah_add_assistant' }]);
+      keyboard.push([{ text: '🔙 بازگشت', callback_data: 'kargah_list' }]);
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در مدیریت دبیران:', error);
+      return false;
+    }
+  }
+
+  // مشاهده جزئیات دبیر
+  async handleViewAssistant(chatId, messageId, userId, assistantId, callbackQueryId) {
+    try {
+      const { USERS } = require('./3config');
+      const assistant = USERS[assistantId];
+      
+      if (!assistant) {
+        await this.editMessageWithInlineKeyboard(chatId, messageId, '❌ دبیر مورد نظر یافت نشد.', [[{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]]);
+        return false;
+      }
+
+      const text = `👤 *جزئیات دبیر*\n\n📝 نام: *${assistant.name}*\n🎭 نقش: دبیر\n🆔 شناسه: ${assistantId}`;
+
+      const keyboard = [
+        [{ text: '✏️ ویرایش نام', callback_data: `kargah_edit_assistant_name_${assistantId}` }],
+        [{ text: '🗑️ حذف دبیر', callback_data: `kargah_delete_assistant_${assistantId}` }],
+        [{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]
+      ];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در مشاهده دبیر:', error);
+      return false;
+    }
+  }
+
+  // اضافه کردن دبیر جدید
+  async handleAddAssistant(chatId, messageId, userId, callbackQueryId) {
+    try {
+      this.userStates[userId] = 'kargah_add_assistant_name';
+      this.tempData[userId] = {};
+
+      const text = '📝 *اضافه کردن دبیر جدید*\n\nلطفاً نام دبیر را وارد کنید:';
+      const keyboard = [[{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در شروع اضافه کردن دبیر:', error);
+      return false;
+    }
+  }
+
+  // ویرایش نام دبیر
+  async handleEditAssistantName(chatId, messageId, userId, assistantId, callbackQueryId) {
+    try {
+      this.userStates[userId] = `kargah_edit_assistant_name_${assistantId}`;
+      this.tempData[userId] = { assistantId };
+
+      const text = '✏️ *ویرایش نام دبیر*\n\nلطفاً نام جدید دبیر را وارد کنید:';
+      const keyboard = [[{ text: '🔙 بازگشت', callback_data: `kargah_view_assistant_${assistantId}` }]];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در شروع ویرایش نام دبیر:', error);
+      return false;
+    }
+  }
+
+  // حذف دبیر
+  async handleDeleteAssistant(chatId, messageId, userId, assistantId, callbackQueryId) {
+    try {
+      const { USERS } = require('./3config');
+      const assistant = USERS[assistantId];
+      
+      if (!assistant) {
+        await this.editMessageWithInlineKeyboard(chatId, messageId, '❌ دبیر مورد نظر یافت نشد.', [[{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]]);
+        return false;
+      }
+
+      const text = `🗑️ *حذف دبیر*\n\n⚠️ آیا مطمئن هستید که می‌خواهید دبیر *${assistant.name}* را حذف کنید؟\n\n❌ این عملیات قابل بازگشت نیست!`;
+
+      const keyboard = [
+        [{ text: '✅ بله، حذف کن', callback_data: `kargah_confirm_delete_assistant_${assistantId}` }],
+        [{ text: '❌ خیر، انصراف', callback_data: `kargah_view_assistant_${assistantId}` }]
+      ];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در حذف دبیر:', error);
+      return false;
+    }
+  }
+
+  // تایید حذف دبیر
+  async handleConfirmDeleteAssistant(chatId, messageId, userId, assistantId, callbackQueryId) {
+    try {
+      const { USERS } = require('./3config');
+      const assistant = USERS[assistantId];
+      
+      if (!assistant) {
+        await this.editMessageWithInlineKeyboard(chatId, messageId, '❌ دبیر مورد نظر یافت نشد.', [[{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]]);
+        return false;
+      }
+
+      // حذف دبیر از USERS
+      delete USERS[assistantId];
+
+      // ذخیره تغییرات در فایل کانفیگ
+      const fs = require('fs');
+      const configPath = path.join(__dirname, '3config.js');
+      const configContent = fs.readFileSync(configPath, 'utf8');
+      
+      // به‌روزرسانی USERS در فایل کانفیگ
+      const updatedContent = configContent.replace(
+        /const USERS = \{[\s\S]*?\};/,
+        `const USERS = ${JSON.stringify(USERS, null, 2)};`
+      );
+      
+      fs.writeFileSync(configPath, updatedContent);
+
+      const text = `✅ دبیر *${assistant.name}* با موفقیت حذف شد.`;
+
+      const keyboard = [[{ text: '🔙 بازگشت به مدیریت دبیران', callback_data: 'kargah_manage_assistants' }]];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, text, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در حذف دبیر:', error);
+      return false;
+    }
+  }
+
+  // پردازش مراحل اضافه کردن دبیر
+  async handleAddAssistantStep(chatId, userId, text, userState) {
+    try {
+      if (userState === 'kargah_add_assistant_name') {
+        if (!text || text.trim().length === 0) {
+          await this.sendMessage(chatId, '❌ نام دبیر نمی‌تواند خالی باشد. لطفاً نام دبیر را وارد کنید:');
+          return true;
+        }
+
+        // ذخیره نام دبیر
+        this.tempData[userId].assistantName = text.trim();
+        this.userStates[userId] = 'kargah_add_assistant_confirm';
+
+        const text = `✅ نام دبیر ثبت شد: *${text.trim()}*\n\n📋 خلاصه اطلاعات:\n👤 نام: ${text.trim()}\n🎭 نقش: دبیر\n\n✅ آیا می‌خواهید این دبیر را اضافه کنید؟`;
+
+        const keyboard = [
+          [{ text: '✅ بله، اضافه کن', callback_data: 'kargah_confirm_add_assistant' }],
+          [{ text: '❌ خیر، انصراف', callback_data: 'kargah_manage_assistants' }]
+        ];
+
+        await this.sendMessageWithInlineKeyboard(chatId, text, keyboard);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('❌ خطا در پردازش اضافه کردن دبیر:', error);
+      return false;
+    }
+  }
+
+  // پردازش مراحل ویرایش دبیر
+  async handleEditAssistantStep(chatId, userId, text, userState) {
+    try {
+      if (userState.startsWith('kargah_edit_assistant_name_')) {
+        const assistantId = userState.replace('kargah_edit_assistant_name_', '');
+        
+        if (!text || text.trim().length === 0) {
+          await this.sendMessage(chatId, '❌ نام دبیر نمی‌تواند خالی باشد. لطفاً نام جدید دبیر را وارد کنید:');
+          return true;
+        }
+
+        // به‌روزرسانی نام دبیر
+        const { USERS } = require('./3config');
+        if (USERS[assistantId]) {
+          USERS[assistantId].name = text.trim();
+          
+          // ذخیره تغییرات در فایل کانفیگ
+          const fs = require('fs');
+          const configPath = path.join(__dirname, '3config.js');
+          const configContent = fs.readFileSync(configPath, 'utf8');
+          
+          const updatedContent = configContent.replace(
+            /const USERS = \{[\s\S]*?\};/,
+            `const USERS = ${JSON.stringify(USERS, null, 2)};`
+          );
+          
+          fs.writeFileSync(configPath, updatedContent);
+
+          // پاک کردن وضعیت کاربر
+          delete this.userStates[userId];
+          delete this.tempData[userId];
+
+          const successText = `✅ نام دبیر با موفقیت به *${text.trim()}* تغییر یافت.`;
+
+          const keyboard = [[{ text: '🔙 بازگشت به مدیریت دبیران', callback_data: 'kargah_manage_assistants' }]];
+
+          await this.sendMessageWithInlineKeyboard(chatId, successText, keyboard);
+          return true;
+        } else {
+          await this.sendMessage(chatId, '❌ دبیر مورد نظر یافت نشد.');
+          return false;
+        }
+      }
+
+      return false;
+    } catch (error) {
+      console.error('❌ خطا در پردازش ویرایش دبیر:', error);
+      return false;
+    }
+  }
+
+  // تایید اضافه کردن دبیر
+  async handleConfirmAddAssistant(chatId, messageId, userId, callbackQueryId) {
+    try {
+      const tempData = this.tempData[userId];
+      if (!tempData || !tempData.assistantName) {
+        await this.editMessageWithInlineKeyboard(chatId, messageId, '❌ خطا: اطلاعات دبیر یافت نشد.', [[{ text: '🔙 بازگشت', callback_data: 'kargah_manage_assistants' }]]);
+        return false;
+      }
+
+      // اضافه کردن دبیر جدید به USERS
+      const { USERS } = require('./3config');
+      const newAssistantId = Date.now().toString(); // تولید شناسه جدید
+      
+      USERS[newAssistantId] = {
+        name: tempData.assistantName,
+        role: 'ASSISTANT'
+      };
+
+      // ذخیره تغییرات در فایل کانفیگ
+      const fs = require('fs');
+      const configPath = path.join(__dirname, '3config.js');
+      const configContent = fs.readFileSync(configPath, 'utf8');
+      
+      const updatedContent = configContent.replace(
+        /const USERS = \{[\s\S]*?\};/,
+        `const USERS = ${JSON.stringify(USERS, null, 2)};`
+      );
+      
+      fs.writeFileSync(configPath, updatedContent);
+
+      // پاک کردن وضعیت کاربر
+      delete this.userStates[userId];
+      delete this.tempData[userId];
+
+      const successText = `✅ دبیر *${tempData.assistantName}* با موفقیت اضافه شد.`;
+
+      const keyboard = [[{ text: '🔙 بازگشت به مدیریت دبیران', callback_data: 'kargah_manage_assistants' }]];
+
+      await this.editMessageWithInlineKeyboard(chatId, messageId, successText, keyboard);
+      return true;
+    } catch (error) {
+      console.error('❌ خطا در اضافه کردن دبیر:', error);
+      return false;
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 // ماژول ثبت اطلاعات و گزارش‌دهی روزانه
 // مربی هر روز گزارش می‌دهد: 2 سوال تستی + 1 سوال تشریحی
+// + سیستم گزارش‌گیری سلسله‌مراتبی
 
 const fs = require('fs');
 const path = require('path');
@@ -9,6 +10,9 @@ class SabtManager {
     this.reportsFile = path.join(__dirname, 'data', 'daily_reports.json');
     this.reports = this.loadReports();
     this.userStates = new Map(); // وضعیت کاربران در حال ثبت گزارش
+    
+    // اضافه کردن ماژول گزارش‌گیری سلسله‌مراتبی
+    this.hierarchicalReporting = require('./hierarchical_reporting');
   }
 
   // بارگذاری گزارش‌های موجود
@@ -41,6 +45,39 @@ class SabtManager {
 
   // شروع ثبت گزارش جدید
   startReport(chatId, userId, userName) {
+    try {
+      // دریافت نقش کاربر
+      const { getUserRole } = require('./3config');
+      const userRole = getUserRole(userId);
+      
+      // بررسی اینکه آیا کاربر نقش معتبر دارد
+      if (!userRole || userRole === 'STUDENT') {
+        return {
+          text: '❌ شما نمی‌توانید از این بخش استفاده کنید.',
+          keyboard: [[{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]]
+        };
+      }
+
+      // نمایش منوی انتخاب نوع گزارش
+      return {
+        text: `📝 *ثبت اطلاعات*\n\n👤 ${userName}\n🎭 نقش: ${this.getRoleDisplayName(userRole)}\n\nلطفاً نوع گزارش مورد نظر را انتخاب کنید:`,
+        keyboard: [
+          [{ text: '📊 گزارش روزانه', callback_data: 'daily_report' }],
+          [{ text: '👥 گزارش‌گیری سلسله‌مراتبی', callback_data: 'hierarchical_report' }],
+          [{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]
+        ]
+      };
+    } catch (error) {
+      console.error('❌ خطا در شروع گزارش:', error);
+      return {
+        text: '❌ خطا در شروع گزارش. لطفاً دوباره تلاش کنید.',
+        keyboard: [[{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]]
+      };
+    }
+  }
+
+  // شروع گزارش روزانه
+  startDailyReport(chatId, userId, userName) {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
     
     // بررسی اینکه آیا امروز گزارش داده شده یا نه
@@ -59,7 +96,8 @@ class SabtManager {
       userName,
       date: today,
       step: 'question1',
-      answers: {}
+      answers: {},
+      reportType: 'daily'
     });
 
     return {
@@ -72,8 +110,52 @@ class SabtManager {
     };
   }
 
+  // شروع گزارش‌گیری سلسله‌مراتبی
+  startHierarchicalReport(chatId, userId, userName) {
+    try {
+      const { getUserRole } = require('./3config');
+      const userRole = getUserRole(userId);
+      
+      return this.hierarchicalReporting.startReporting(chatId, userId, userRole, userName);
+    } catch (error) {
+      console.error('❌ خطا در شروع گزارش‌گیری سلسله‌مراتبی:', error);
+      return {
+        text: '❌ خطا در شروع گزارش‌گیری. لطفاً دوباره تلاش کنید.',
+        keyboard: [[{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]]
+      };
+    }
+  }
+
+  // دریافت نام نمایشی نقش
+  getRoleDisplayName(role) {
+    const roleNames = {
+      'SCHOOL_ADMIN': 'مدیر',
+      'COACH': 'راهبر',
+      'ASSISTANT': 'دبیر',
+      'STUDENT': 'فعال'
+    };
+    return roleNames[role] || role;
+  }
+
   // پردازش پاسخ‌ها
   handleAnswer(chatId, text) {
+    // بررسی وضعیت گزارش روزانه
+    const dailyState = this.userStates.get(chatId);
+    if (dailyState && dailyState.reportType === 'daily') {
+      return this.handleDailyReportAnswer(chatId, text);
+    }
+
+    // بررسی وضعیت گزارش‌گیری سلسله‌مراتبی
+    const hierarchicalState = this.hierarchicalReporting.getUserState(chatId);
+    if (hierarchicalState) {
+      return this.hierarchicalReporting.handleMessage(chatId, text);
+    }
+
+    return { text: '❌ خطا: وضعیت ثبت گزارش یافت نشد. لطفاً دوباره شروع کنید.' };
+  }
+
+  // پردازش پاسخ‌های گزارش روزانه
+  handleDailyReportAnswer(chatId, text) {
     const state = this.userStates.get(chatId);
     if (!state) {
       return { text: '❌ خطا: وضعیت ثبت گزارش یافت نشد. لطفاً دوباره شروع کنید.' };
@@ -100,6 +182,43 @@ class SabtManager {
 
   // پردازش callback queries
   handleCallback(chatId, callbackData) {
+    // بررسی callback های منوی اصلی
+    if (callbackData === 'daily_report') {
+      const state = this.userStates.get(chatId);
+      if (state) {
+        return this.startDailyReport(chatId, state.userId, state.userName);
+      }
+    }
+    
+    if (callbackData === 'hierarchical_report') {
+      const state = this.userStates.get(chatId);
+      if (state) {
+        return this.startHierarchicalReport(chatId, state.userId, state.userName);
+      }
+    }
+
+    if (callbackData === 'back_to_main') {
+      this.userStates.delete(chatId);
+      return { text: '🔙 بازگشت به منوی اصلی' };
+    }
+
+    // بررسی callback های گزارش روزانه
+    const dailyState = this.userStates.get(chatId);
+    if (dailyState && dailyState.reportType === 'daily') {
+      return this.handleDailyReportCallback(chatId, callbackData);
+    }
+
+    // بررسی callback های گزارش‌گیری سلسله‌مراتبی
+    const hierarchicalState = this.hierarchicalReporting.getUserState(chatId);
+    if (hierarchicalState) {
+      return this.hierarchicalReporting.handleCallback(chatId, callbackData);
+    }
+
+    return { text: '❌ خطا: وضعیت ثبت گزارش یافت نشد. لطفاً دوباره شروع کنید.' };
+  }
+
+  // پردازش callback های گزارش روزانه
+  handleDailyReportCallback(chatId, callbackData) {
     const state = this.userStates.get(chatId);
     if (!state) {
       return { text: '❌ خطا: وضعیت ثبت گزارش یافت نشد. لطفاً دوباره شروع کنید.' };
@@ -115,16 +234,16 @@ class SabtManager {
         // بازگشت به مرحله اول
         state.step = 'question1';
         state.answers = {};
-        return this.startReport(chatId, state.userId, state.userName);
+        return this.startDailyReport(chatId, state.userId, state.userName);
       
       case 'answer_1':
         return this.handleQuestion1(chatId, '1');
       case 'answer_2':
-        return this.handleQuestion1(chatId, '2');
+        return this.handleQuestion2(chatId, '2');
       case 'answer_3':
-        return this.handleQuestion1(chatId, '3');
+        return this.handleQuestion3(chatId, '3');
       case 'answer_4':
-        return this.handleQuestion1(chatId, '4');
+        return this.handleQuestion4(chatId, '4');
       
       case 'satisfaction_1':
         return this.handleQuestion2(chatId, '1');

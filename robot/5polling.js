@@ -1020,6 +1020,23 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
       }
       return;
     }
+
+    // بررسی وضعیت در ثبت اطلاعات - اولویت بالا
+    console.log(`🔍 [POLLING] Checking sabt state for user ${msg.from.id}`);
+    const sabtManager = require('./18sabt');
+    
+    if (sabtManager.getUserState(msg.from.id)) {
+      console.log(`🔍 [POLLING] User ${msg.from.id} is in sabt state`);
+      const result = sabtManager.handleAnswer(msg.chat.id, msg.text);
+      if (result && result.text) {
+        if (result.keyboard) {
+          await sendMessageWithInlineKeyboard(msg.chat.id, result.text, result.keyboard);
+        } else {
+          await sendMessage(msg.chat.id, result.text);
+        }
+        return;
+      }
+    }
     
     // کد مربوط به پردازش پیام‌های عادی
     // نادیده گرفتن کلمات خاص
@@ -1462,7 +1479,19 @@ function startPolling() {
                      callback_query.data === 'edit_report' ||
                      callback_query.data.startsWith('answer_') ||
                      callback_query.data.startsWith('satisfaction_') ||
-                     callback_query.data === 'confirm_report') {
+                     callback_query.data === 'confirm_report' ||
+                     callback_query.data === 'daily_report' ||
+                     callback_query.data === 'hierarchical_report' ||
+                     callback_query.data === 'back_to_main' ||
+                     callback_query.data.startsWith('select_role_') ||
+                     callback_query.data.startsWith('select_user_') ||
+                     callback_query.data.startsWith('communication_') ||
+                     callback_query.data.startsWith('satisfaction_') ||
+                     callback_query.data === 'skip_description' ||
+                     callback_query.data === 'back_to_role_selection' ||
+                     callback_query.data === 'back_to_user_selection' ||
+                     callback_query.data === 'back_to_communication' ||
+                     callback_query.data === 'back_to_satisfaction') {
             console.log('📝 [POLLING] Sabt inline keyboard callback detected');
             console.log(`📝 [POLLING] Sabt callback data: ${callback_query.data}`);
             // پردازش callback های کیبرد اینلاین ثبت اطلاعات
@@ -1484,6 +1513,25 @@ function startPolling() {
             } else {
               console.error('❌ [POLLING] Error handling sabt inline keyboard callback');
               console.error(`❌ [POLLING] Sabt callback failed for data: ${callback_query.data}`);
+            }
+          } else if (callback_query.data.startsWith('kargah_') ||
+                     callback_query.data === 'kargah_manage_assistants' ||
+                     callback_query.data.startsWith('kargah_view_assistant_') ||
+                     callback_query.data === 'kargah_add_assistant' ||
+                     callback_query.data.startsWith('kargah_edit_assistant_') ||
+                     callback_query.data.startsWith('kargah_delete_assistant_') ||
+                     callback_query.data.startsWith('kargah_confirm_')) {
+            console.log('🏭 [POLLING] Kargah callback detected');
+            console.log(`🏭 [POLLING] Kargah callback data: ${callback_query.data}`);
+            // پردازش callback های کارگاه
+            const kargahModule = require('./12kargah');
+            const result = await kargahModule.handleCallback(callback_query);
+            
+            if (!result) {
+              console.error('❌ [POLLING] Error handling kargah callback');
+              console.error(`❌ [POLLING] Kargah callback failed for data: ${callback_query.data}`);
+            } else {
+              console.log('✅ [POLLING] Kargah callback handled successfully');
             }
           } else if (callback_query.data.startsWith('coach_') || 
                      callback_query.data.startsWith('attendance_') || 
@@ -1532,6 +1580,7 @@ function startPolling() {
                      callback_query.data === 'back_to_main' ||
                      callback_query.data === 'manage_assistant' ||
                      callback_query.data === 'coach_groups' ||
+                     callback_query.data === 'coach_register_info' ||
                      callback_query.data.startsWith('assistant_')) {
             console.log('🔄 [POLLING] Registration callback detected');
             console.log(`🔄 [POLLING] Registration callback data: ${callback_query.data}`);
