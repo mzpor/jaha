@@ -79,9 +79,12 @@ class RegistrationModule {
 
     // نمایش خوش‌آمدگویی
     async showWelcome(ctx) {
-        const welcomeText = `🎉 به ربات دستیار تلاوت قران خوش امدید.
+        const welcomeText = `🎉 به ربات دستیار هوشمند خوش آمدید
 
-📱 برای شروع، لطفاً ابتدا ثبت‌نام کنید:`;
+📱  برای شروع، لطفاً در دستیار هوشمند ثبت‌نام کنید.
+
+بعد از ارسال تلفن
+ بلافاصله نام و نام خانوادگی را وارد کنید: مثل (محمد محمدی)`;
         
         ctx.reply(welcomeText);
         
@@ -105,8 +108,15 @@ class RegistrationModule {
             resize_keyboard: true
         };
         
-        // ارسال با keyboard
-        ctx.reply("📱 لطفاً شماره تلفن خود را با دکمه زیر ارسال کنید:", { 
+        // ارسال پیام خوش‌آمدگویی + دکمه contact
+        const welcomeText = `🎉 به ربات دستیار هوشمند خوش آمدید
+
+📱  برای شروع، لطفاً در دستیار هوشمند ثبت‌نام کنید.
+
+بعد از ارسال تلفن
+ بلافاصله نام و نام خانوادگی را وارد کنید: مثل (محمد محمدی)`;
+        
+        ctx.reply(welcomeText, { 
             reply_markup: contactKeyboard 
         });
     }
@@ -1286,7 +1296,8 @@ class RegistrationModule {
 
 📋 **گزینه‌های موجود:**
 • 🎯 مدیریت گروه‌ها
-• 👨‍🏫 مدیریت ${getRoleDisplayName('ASSISTANT')}`;
+• 👨‍🏫 مدیریت ${getRoleDisplayName('ASSISTANT')}
+• 📝 ثبت اطلاعات (گزارش‌گیری سلسله‌مراتبی)`;
         
         // کیبرد معمولی (موجود)
         const keyboard = {
@@ -1305,6 +1316,7 @@ class RegistrationModule {
         // ساخت کیبرد بر اساس کانفیگ
         const coachKeyboard = [
             [{ text: `👨‍🏫 مدیریت ${getRoleDisplayName('ASSISTANT')}`, callback_data: 'manage_assistant' }],
+            [{ text: '📝 ثبت اطلاعات', callback_data: 'coach_register_info' }],
             [{ text: '🔙 بازگشت', callback_data: 'back' }]
         ];
         
@@ -1365,6 +1377,19 @@ class RegistrationModule {
             console.log(`⏳ [15REG] ثبت‌نام کارگاه غیرفعال درخواست شد`);
             await answerCallbackQuery(callbackQueryId, '⏳ ثبت‌نام در کارگاه‌ها به زودی فعال خواهد شد');
             return true;
+        } else if (data === 'coach_register_info') {
+            console.log(`📝 [15REG] ثبت اطلاعات راهبر درخواست شد`);
+            const { sendMessageWithInlineKeyboard } = require('./4bale');
+            const sabtManager = require('./18sabt');
+            const result = sabtManager.startReport(msg.chat.id, msg.from.id, msg.from.first_name || 'کاربر');
+            
+            if (result && result.text && result.keyboard) {
+                await sendMessageWithInlineKeyboard(msg.chat.id, result.text, result.keyboard);
+                return true;
+            } else {
+                console.error('❌ [15REG] خطا در شروع ثبت اطلاعات راهبر');
+                return false;
+            }
         } else if (data === 'manage_assistant') {
             console.log(`👨‍🏫 [15REG] مدیریت دبیر درخواست شد`);
             return await this.handleManageAssistant(chatId, userId, callbackQueryId);
