@@ -51,6 +51,9 @@ const SabtManager = require('./18sabt');
 // ایجاد یک instance واحد از SmartRegistrationModule
 const registrationModule = new SmartRegistrationModule();
 
+// اضافه کردن Callback Registry
+const callbackRegistry = require('./callback_registry');
+
 // ایجاد یک instance واحد از PaymentModule
 const paymentModule = new PaymentModule();
 
@@ -59,6 +62,10 @@ const arzyabiModule = new ArzyabiModule();
 
 // ایجاد یک instance واحد از SabtManager
 const sabtManager = new SabtManager();
+
+// ایجاد instance از ماژول مدیریت
+const ManagementModule = require('./management_module');
+const managementModule = new ManagementModule();
 
 // تابع گزارش هوشمند ورود ربات به گروه
 async function reportBotJoinToGroup(chat) {
@@ -193,6 +200,75 @@ async function removeBotFromGroup(groupId) {
 const { BOT_TOKEN } = require('./3config');
 paymentModule.setBotToken(BOT_TOKEN);
 
+// ثبت ماژول‌ها در Callback Registry
+console.log('🔄 [POLLING] Registering modules in Callback Registry...');
+
+// ثبت ماژول مدیریت
+callbackRegistry.registerModule('management', managementModule, [
+  'management_',
+  'coach_',
+  'teacher_',
+  'assistant_'
+]);
+
+// ثبت ماژول راهبران
+callbackRegistry.registerModule('kargah', kargahModule, [
+  'kargah_',
+  'student_',
+  'pay_workshop_'
+]);
+
+// ثبت ماژول دبیران
+callbackRegistry.registerModule('osatd', osatdModule, [
+  'coaches_list',
+  'back_to_coaches',
+  'back_to_workshops',
+  'back_to_students_'
+]);
+
+// ثبت ماژول ارزیابی
+callbackRegistry.registerModule('arzyabi', arzyabiModule, [
+  'practice_',
+  'evaluation_',
+  'satisfaction_'
+]);
+
+// ثبت ماژول تنظیمات
+callbackRegistry.registerModule('settings', SettingsModule, [
+  'settings_',
+  'toggle_',
+  'select_'
+]);
+
+// ثبت ماژول ثبت‌نام
+callbackRegistry.registerModule('registration', registrationModule, [
+  'start_registration',
+  'edit_',
+  'final_confirm',
+  'quran_student_',
+  'complete_registration',
+  'payment_confirm_',
+  'next_month_registration'
+]);
+
+// ثبت ماژول پرداخت
+callbackRegistry.registerModule('payment', paymentModule, [
+  'pay_workshop_'
+]);
+
+// ثبت ماژول ثبت
+callbackRegistry.registerModule('sabt', sabtManager, [
+  'sabt_',
+  'cancel_report',
+  'edit_report',
+  'answer_',
+  'confirm_report'
+]);
+
+console.log('✅ [POLLING] All modules registered in Callback Registry');
+console.log('📊 [POLLING] Registered modules:', callbackRegistry.getRegisteredModules());
+console.log('🔗 [POLLING] Registered prefixes:', callbackRegistry.getRegisteredPrefixes());
+
 let lastId = 0;
 
 // بررسی وضعیت ادمین ربات
@@ -285,11 +361,11 @@ const messageTimestamps = {
 // تنظیمات نقش‌ها - به‌روزرسانی شده در 1404/05/13 ساعت 16:47 - نسخه 1.4.1
 const roleConfig = {
   [ROLES.SCHOOL_ADMIN]: {
-            name: 'مدیر راهبران',
+    name: 'مدیر راهبران',
     emoji: '🛡️',
     panelText: 'مدیر',
     get keyboard() { return generateDynamicKeyboard(ROLES.SCHOOL_ADMIN); },
-    commands: ['/شروع', '/خروج', '/ربات', '/مدیر', '/تنظیمات', '/کارگاه']
+    commands: ['/شروع', '/خروج', '/ربات', '/مدیر', '/تنظیمات', '/کارگاه', '/مدیریت']
     // دستور /نقش‌ها غیرفعال شده
   },
 
@@ -347,7 +423,7 @@ function generateDynamicKeyboard(role, userId = null) {
       secondRow.push('تنظیمات');
     }
     
-            // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ (برای مشاهده گزارشات راهبران)
+    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ (برای مشاهده گزارشات راهبران)
     if (MAIN_BUTTONS_CONFIG.REGISTER_INFO === 1) {
       secondRow.push('ثبت اطلاعات');
     }
@@ -356,6 +432,9 @@ function generateDynamicKeyboard(role, userId = null) {
     if (isButtonVisible('ROLES_BUTTON')) {
       secondRow.push('نقش‌ها');
     }
+    
+    // اضافه کردن دکمه مدیریت راهبران و دبیران
+    secondRow.push('مدیریت');
   } else if (role === ROLES.COACH) {
     secondRow.push('راهبر');
     
@@ -696,6 +775,36 @@ async function handleRoleMessage(msg, role) {
           } else {
             console.log(`❌ [POLLING] کاربر نقش مناسب ندارد: ${userRole}`);
             reply = '❌ فقط راهبر، دبیر و مدیر راهبران می‌توانند از ثبت اطلاعات استفاده کنند.';
+            keyboard = config.keyboard;
+          }
+        }
+      } else if (msg.text === 'مدیریت') {
+        // دکمه مدیریت راهبران و دبیران - فقط برای مدیر راهبران
+        console.log(`🏫 [POLLING] مدیریت راهبران و دبیران درخواست شد`);
+        
+        if (!isAdmin(msg.from.id)) {
+          console.log('❌ [POLLING] User is not admin for management command');
+          reply = '⚠️ فقط مدیر راهبران می‌تواند از مدیریت استفاده کند.';
+          keyboard = config.keyboard;
+        } else {
+          // نمایش پنل مدیریت
+          console.log('🔍 [POLLING] User is admin, calling management module...');
+          
+          // متصل کردن متدهای ارسال پیام
+          managementModule.setSendMessage(sendMessage);
+          managementModule.setSendMessageWithInlineKeyboard(sendMessageWithInlineKeyboard);
+          managementModule.setEditMessageWithInlineKeyboard(require('./4bale').editMessageWithInlineKeyboard);
+          
+          const result = managementModule.getMainManagementMenu(msg.from.id);
+          
+          if (result && result.text && result.keyboard) {
+            console.log(`✅ [POLLING] ارسال پیام مدیریت با کیبرد اینلاین...`);
+            await sendMessageWithInlineKeyboard(msg.chat.id, result.text, result.keyboard);
+            console.log(`✅ [POLLING] پیام مدیریت ارسال شد، بازگشت از حلقه`);
+            return; // ادامه حلقه بدون ارسال پیام معمولی
+          } else {
+            console.log(`❌ [POLLING] نتیجه مدیریت نامعتبر است`);
+            reply = '❌ خطا در نمایش پنل مدیریت';
             keyboard = config.keyboard;
           }
         }
@@ -1086,50 +1195,47 @@ function startPolling() {
           console.log('🔄 [POLLING] Callback query detected');
           console.log(`🔄 [POLLING] Callback data: ${callback_query.data}`);
           console.log(`🔄 [POLLING] User ID: ${callback_query.from.id}, Chat ID: ${callback_query.message.chat.id}`);
-          console.log(`🔄 [POLLING] Callback data type: ${typeof callback_query.data}`);
-          console.log(`🔄 [POLLING] Callback data length: ${callback_query.data.length}`);
-          console.log(`🔄 [POLLING] Callback data starts with 'practice_': ${callback_query.data.startsWith('practice_')}`);
-          console.log(`🔄 [POLLING] Callback data starts with 'evaluation_': ${callback_query.data.startsWith('evaluation_')}`);
-          console.log(`🔄 [POLLING] Callback data === 'practice_evaluation_days_settings': ${callback_query.data === 'practice_evaluation_days_settings'}`);
           
-          // حذف پیام قبلی که کیبورد شیشه‌ای داشت - فقط برای callback های غیر کارگاه و غیر بازگشت
-                  if (!callback_query.data.startsWith('kargah_') &&
-            !callback_query.data.startsWith('student_') &&
-            !callback_query.data.startsWith('quran_student_') &&
-            !callback_query.data.startsWith('coach_') &&
-            !callback_query.data.startsWith('attendance_') &&
-            !callback_query.data.startsWith('report_') &&
-            !callback_query.data.startsWith('coaches_list') &&
-            !callback_query.data.startsWith('back_to_coaches') &&
-            !callback_query.data.startsWith('back_to_workshops') &&
-            !callback_query.data.startsWith('back_to_students_') &&
-            !callback_query.data.startsWith('sabt_') &&
-            callback_query.data !== 'back_to_groups' &&
-            callback_query.data !== 'back_to_main' &&
-            callback_query.data !== 'kargah_management') {
-            try {
-              console.log('🗑️ [POLLING] Attempting to delete previous message...');
-              await deleteMessage(callback_query.message.chat.id, callback_query.message.message_id);
-              console.log('🗑️ [POLLING] Previous message deleted successfully');
-            } catch (error) {
-              console.log('🗑️ [POLLING] Could not delete previous message:', error.message);
+          // استفاده از Callback Registry برای پردازش callback ها
+          try {
+            const result = await callbackRegistry.handleCallback(callback_query);
+            
+            if (result) {
+              console.log(`✅ [POLLING] Callback '${callback_query.data}' handled successfully by registry`);
+              
+              // اگر نتیجه شامل متن و کیبرد باشد، پیام جدید ارسال کن
+              if (result.text && result.keyboard) {
+                await sendMessageWithInlineKeyboard(
+                  callback_query.message.chat.id, 
+                  result.text, 
+                  result.keyboard
+                );
+              }
+            } else {
+              console.warn(`⚠️ [POLLING] Callback '${callback_query.data}' not handled by any module`);
+              
+              // حذف پیام‌های قدیمی برای callback های نامعتبر
+              try {
+                await deleteMessage(callback_query.message.chat.id, callback_query.message.message_id);
+                console.log('🗑️ [POLLING] Message with unknown callback deleted');
+              } catch (error) {
+                console.log('🗑️ [POLLING] Could not delete message:', error.message);
+              }
             }
+          } catch (error) {
+            console.error(`❌ [POLLING] Error handling callback '${callback_query.data}':`, error.message);
           }
           
-          // تشخیص نقش کاربر - به‌روزرسانی شده در 1404/05/13 ساعت 09:50
+                    continue;
+        }
+        
+        // پردازش callback های خاص که نیاز به منطق خاص دارند
+        if (callback_query) {
+          // تشخیص نقش کاربر
           const role = getUserRole(callback_query.from.id);
           console.log(`🔄 [POLLING] User role: ${role}`);
           
           // بررسی callback data برای مدیریت گروه‌ها
-          console.log(`🔍 [POLLING] Checking callback conditions for: ${callback_query.data}`);
-          console.log(`🔍 [POLLING] Starts with 'group_': ${callback_query.data.startsWith('group_')}`);
-          console.log(`🔍 [POLLING] Starts with 'settings_': ${callback_query.data.startsWith('settings_')}`);
-          console.log(`🔍 [POLLING] Starts with 'toggle_': ${callback_query.data.startsWith('toggle_')}`);
-          console.log(`🔍 [POLLING] Starts with 'select_': ${callback_query.data.startsWith('select_')}`);
-          console.log(`🔍 [POLLING] Starts with 'practice_': ${callback_query.data.startsWith('practice_')}`);
-          console.log(`🔍 [POLLING] Starts with 'evaluation_': ${callback_query.data.startsWith('evaluation_')}`);
-          console.log(`🔍 [POLLING] Equals 'practice_evaluation_days_settings': ${callback_query.data === 'practice_evaluation_days_settings'}`);
-          
           if (callback_query.data.startsWith('group_') || 
               callback_query.data.startsWith('member_') ||
               callback_query.data.startsWith('status_') ||
@@ -1145,7 +1251,7 @@ function startPolling() {
             if (!isGroupManagementEnabled()) {
               console.log('❌ [POLLING] Group management is disabled by config');
               await answerCallbackQuery(callback_query.id, '⚠️ مدیریت گروه‌ها غیرفعال است', true);
-              return;
+              continue;
             }
             
             // بررسی دسترسی کاربر
@@ -1153,15 +1259,17 @@ function startPolling() {
             if (!hasGroupManagementAccess(userRole)) {
               console.log(`❌ [POLLING] User ${callback_query.from.id} with role ${userRole} has no access to group management`);
               await answerCallbackQuery(callback_query.id, '⚠️ شما دسترسی لازم برای مدیریت گروه‌ها را ندارید', true);
-              return;
+              continue;
             }
             
             console.log('🔄 [POLLING] Group management callback detected');
             // پردازش مدیریت گروه‌ها با استفاده از ماژول جدید
             await handleGroupManagementCallback(callback_query);
-            
-            } else if (callback_query.data === 'intro_quran_bot') {
-            
+            continue;
+          }
+          
+          // پردازش callback های خاص
+          if (callback_query.data === 'intro_quran_bot') {
             console.log('🔄 [POLLING] Quran bot intro callback detected');
             const config = roleConfig[role];
             const reply = `📖 ربات جهادی هوشمند
