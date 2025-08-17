@@ -6,6 +6,9 @@ const { USER_ACCESS_CONFIG, addUserToRole, MAIN_BUTTONS_CONFIG } = require('./3c
 // اضافه کردن ماژول پرداخت
 const PaymentModule = require('./16pay');
 
+// اضافه کردن ماژول مدیریت رابط کاربری زیبا
+const UIManager = require('./ui_manager');
+
 class RegistrationModule {
     constructor() {
         this.dataFile = path.join(__dirname, 'data', 'smart_registration.json');
@@ -18,6 +21,10 @@ class RegistrationModule {
         
         // اضافه کردن ماژول پرداخت
         this.paymentModule = new PaymentModule();
+        
+        // اضافه کردن ماژول مدیریت رابط کاربری زیبا
+        this.uiManager = new UIManager();
+        this.uiManager.setAllowUserReset(USER_ACCESS_CONFIG.allowUserReset === 1);
     }
 
     // بارگذاری داده‌ها
@@ -79,16 +86,7 @@ class RegistrationModule {
 
     // نمایش خوش‌آمدگویی
     async showWelcome(ctx) {
-        const welcomeText = `🎉 به ربات دستیار هوشمند خوش آمدید
-
-📱  برای شروع، لطفاً در دستیار هوشمند ثبت‌نام کنید.
-
-بعد از ارسال تلفن
- بلافاصله نام و نام خانوادگی را وارد کنید: مثل (محمد محمدی)`;
-        
-        ctx.reply(welcomeText);
-        
-        // نمایش دکمه درخواست شماره تلفن
+        // نمایش دکمه درخواست شماره تلفن (که خودش پیام خوش‌آمدگویی را ارسال می‌کند)
         this.showContactButton(ctx);
         
         // تنظیم وضعیت کاربر
@@ -103,18 +101,11 @@ class RegistrationModule {
 
     // نمایش دکمه request_contact
     showContactButton(ctx) {
-        const contactKeyboard = {
-            keyboard: [[{ text: "📱 ارسال شماره تلفن", request_contact: true }]],
-            resize_keyboard: true
-        };
+        // استفاده از ماژول رابط کاربری زیبا
+        const contactKeyboard = this.uiManager.createAnonymousKeyboard();
         
         // ارسال پیام خوش‌آمدگویی + دکمه contact
-        const welcomeText = `🎉 به ربات دستیار هوشمند خوش آمدید
-
-📱  برای شروع، لطفاً در دستیار هوشمند ثبت‌نام کنید.
-
-بعد از ارسال تلفن
- بلافاصله نام و نام خانوادگی را وارد کنید: مثل (محمد محمدی)`;
+        const welcomeText = this.uiManager.createWelcomeMessage();
         
         ctx.reply(welcomeText, { 
             reply_markup: contactKeyboard 
@@ -198,7 +189,9 @@ class RegistrationModule {
             ctx.reply('👤 لطفاً نام و فامیل خود را وارد کنید:');
         } else {
             console.log(`⚠️ [15REG] مرحله ناشناخته: ${userState.step}`);
-            ctx.reply('❌ خطا در ادامه ثبت‌نام. لطفاً دوباره تلاش کنید.');
+            // استفاده از ماژول رابط کاربری زیبا
+            const errorText = this.uiManager.createErrorMessage('unknown_step');
+            ctx.reply(errorText);
             // ریست کردن و شروع مجدد
             delete this.userStates[userId];
             this.saveData();
@@ -254,37 +247,17 @@ class RegistrationModule {
             this.userStates[userId].step = 'completed';
             this.saveData();
             
-            const roleText = userRole === 'coach' ? 'راهبر' : 'دبیر';
-            
-            const welcomeText = `👨‍🏫 خوش‌آمدی ${roleText} ${firstName}
-پنل ${roleText} فعال شد`;
+            // استفاده از ماژول رابط کاربری زیبا
+            const welcomeText = this.uiManager.createRegisteredUserWelcome(userRole, firstName);
             
             // ساخت کیبرد متناسب با نقش
-            let keyboardRows;
-            if (userRole === 'coach') {
-                keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
-            } else {
-                keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
-            }
+            const keyboard = this.uiManager.createRegisteredUserKeyboard(userRole);
             
-            // اضافه کردن دکمه ریست اگر مجاز باشد
-            if (USER_ACCESS_CONFIG.allowUserReset === 1) {
-                keyboardRows.push(['ریست']);
-                console.log(`✅ [15REG] دکمه ریست اضافه شد (allowUserReset: 1)`);
-            } else {
-                console.log(`⚠️ [15REG] دکمه ریست نمایش داده نمی‌شود (allowUserReset: 0)`);
-            }
-            
-            // 🔥 اضافه کردن دکمه "تمایل به ثبت‌نام" برای دبیر
+            // اضافه کردن دکمه "تمایل به ثبت‌نام" برای دبیر
             if (userRole === 'assistant') {
-                keyboardRows.push(['📝 تمایل به ثبت‌نام']);
+                keyboard.keyboard.push(['📝 تمایل به ثبت‌نام']);
                 console.log(`✅ [15REG] دکمه "تمایل به ثبت‌نام" برای کمک مربی اضافه شد`);
             }
-            
-            const keyboard = {
-                keyboard: keyboardRows,
-                resize_keyboard: true
-            };
             
             ctx.reply(welcomeText, { reply_markup: keyboard });
             
@@ -320,38 +293,19 @@ class RegistrationModule {
             this.userStates[userId].step = 'completed';
             this.saveData();
             
-            const roleText = userRole === 'coach' ? 'راهبر' : 'دبیر';
             const firstName = userData.firstName || 'کاربر';
             
-            const welcomeText = `👨‍🏫 خوش‌آمدی ${roleText} ${firstName}
-پنل ${roleText} فعال شد`;
+            // استفاده از ماژول رابط کاربری زیبا
+            const welcomeText = this.uiManager.createRegisteredUserWelcome(userRole, firstName);
             
             // ساخت کیبرد متناسب با نقش
-            let keyboardRows;
-            if (userRole === 'coach') {
-                keyboardRows = [['شروع', 'راهبر', 'ربات', 'خروج']];
-            } else {
-                keyboardRows = [['شروع', 'دبیر', 'ربات', 'خروج']];
-            }
+            const keyboard = this.uiManager.createRegisteredUserKeyboard(userRole);
             
-            // اضافه کردن دکمه ریست اگر مجاز باشد
-            if (USER_ACCESS_CONFIG.allowUserReset === 1) {
-                keyboardRows.push(['ریست']);
-                console.log(`✅ [15REG] دکمه ریست اضافه شد (allowUserReset: 1)`);
-            } else {
-                console.log(`⚠️ [15REG] دکمه ریست نمایش داده نمی‌شود (allowUserReset: 0)`);
-            }
-            
-            // 🔥 اضافه کردن دکمه "تمایل به ثبت‌نام" برای کمک مربی
+            // اضافه کردن دکمه "تمایل به ثبت‌نام" برای کمک مربی
             if (userRole === 'assistant') {
-                keyboardRows.push(['📝 تمایل به ثبت‌نام']);
+                keyboard.keyboard.push(['📝 تمایل به ثبت‌نام']);
                 console.log(`✅ [15REG] دکمه "تمایل به ثبت‌نام" برای کمک مربی اضافه شد`);
             }
-            
-            const keyboard = {
-                keyboard: keyboardRows,
-                resize_keyboard: true
-            };
             
             ctx.reply(welcomeText, { reply_markup: keyboard });
             
@@ -1214,7 +1168,8 @@ class RegistrationModule {
             resize_keyboard: true
         };
         
-        const welcomeText = `🎉 ${roleText} ${firstName} خوش‌آمدی!`;
+        // استفاده از ماژول رابط کاربری زیبا
+        const welcomeText = this.uiManager.createRegisteredUserWelcome(userRole, firstName);
         ctx.reply(welcomeText, { reply_markup: keyboard });
         
         console.log(`✅ [15REG] کیبرد نقش ${roleText} برای کاربر ${userId} نمایش داده شد`);

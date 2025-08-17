@@ -1023,7 +1023,8 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
 
     // بررسی وضعیت در ثبت اطلاعات - اولویت بالا
     console.log(`🔍 [POLLING] Checking sabt state for user ${msg.from.id}`);
-    const sabtManager = require('./18sabt');
+    const SabtManager = require('./18sabt');
+    const sabtManager = new SabtManager();
     
     if (sabtManager.getUserState(msg.from.id)) {
       console.log(`🔍 [POLLING] User ${msg.from.id} is in sabt state`);

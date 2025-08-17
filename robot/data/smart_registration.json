@@ -15,13 +15,13 @@
       "step": "completed",
       "data": {
         "phone": "989339253803",
-        "fullName": "محمد محمدی",
+        "fullName": "محمد تست",
         "firstName": "محمد",
-        "lastName": "محمدی",
+        "lastName": "تست",
         "userRole": "quran_student"
       },
-      "timestamp": 1755406129022
+      "timestamp": 1755407589842
     }
   },
-  "lastUpdated": "2025-08-17T04:52:46.426Z"
+  "lastUpdated": "2025-08-17T05:30:03.781Z"
 }
