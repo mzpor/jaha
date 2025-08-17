@@ -40,6 +40,6 @@ src/lib/gateway-config.json
 tailwind-test - jahad 8 16 2025 6 40.zip
 robot/data/smart_registration.json
 robot/data/reports_config.json
-robot/data/reports_config.json
-robot/data/reports_config.json
-robot/data/reports_config.json
+#  git rm --cached robot/data/smart_registration.json
+#git commit -m "Remove tracked smart_registration.json"
+
