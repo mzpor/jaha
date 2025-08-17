@@ -7,7 +7,6 @@ const path = require('path');
 
 class HierarchicalReportingManager {
   constructor() {
-    this.reportsFile = path.join(__dirname, 'data', 'hierarchical_reports.json');
     this.userStates = new Map(); // وضعیت کاربران در حال ثبت گزارش
     this.reports = this.loadReports();
     
@@ -31,9 +30,15 @@ class HierarchicalReportingManager {
   // بارگذاری گزارش‌های موجود
   loadReports() {
     try {
-      if (fs.existsSync(this.reportsFile)) {
-        const data = fs.readFileSync(this.reportsFile, 'utf8');
-        return JSON.parse(data);
+      const fs = require('fs');
+      const path = require('path');
+      const reportsFile = path.join(__dirname, 'data', 'hierarchical_reports.json');
+      
+      if (fs.existsSync(reportsFile)) {
+        const data = fs.readFileSync(reportsFile, 'utf8');
+        const reportsData = JSON.parse(data);
+        console.log('✅ گزارش‌های سلسله‌مراتبی بارگذاری شدند');
+        return reportsData.reports || {};
       }
     } catch (error) {
       console.error('❌ خطا در بارگذاری گزارش‌های سلسله‌مراتبی:', error);
@@ -44,11 +49,25 @@ class HierarchicalReportingManager {
   // ذخیره گزارش‌ها
   saveReports() {
     try {
-      const dir = path.dirname(this.reportsFile);
+      const fs = require('fs');
+      const path = require('path');
+      const reportsFile = path.join(__dirname, 'data', 'hierarchical_reports.json');
+      
+      const dir = path.dirname(reportsFile);
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
-      fs.writeFileSync(this.reportsFile, JSON.stringify(this.reports, null, 2));
+      
+      const reportsData = {
+        reports: this.reports,
+        metadata: {
+          last_updated: new Date().toISOString(),
+          version: "1.0.0"
+        }
+      };
+      
+      fs.writeFileSync(reportsFile, JSON.stringify(reportsData, null, 2));
+      console.log('✅ گزارش‌های سلسله‌مراتبی ذخیره شدند');
       return true;
     } catch (error) {
       console.error('❌ خطا در ذخیره گزارش‌های سلسله‌مراتبی:', error);
@@ -58,40 +77,66 @@ class HierarchicalReportingManager {
 
   // شروع گزارش‌گیری برای نقش خاص
   startReporting(chatId, userId, userRole, userName) {
-    const availableRoles = this.roleHierarchy[userRole] || [];
+    try {
+      // بارگذاری نقش‌های موجود از فایل workshops.json
+      const fs = require('fs');
+      const path = require('path');
+      const workshopsFile = path.join(__dirname, 'data', 'workshops.json');
+      
+      let availableRoles = [];
+      
+      if (fs.existsSync(workshopsFile)) {
+        const workshopsData = JSON.parse(fs.readFileSync(workshopsFile, 'utf8'));
+        
+        // بررسی اینکه کدام نقش‌ها در فایل موجود هستند
+        if (workshopsData.assistant && Object.keys(workshopsData.assistant).length > 0) {
+          availableRoles.push('ASSISTANT');
+        }
+        if (workshopsData.coach && Object.keys(workshopsData.coach).length > 0) {
+          availableRoles.push('COACH');
+        }
+      }
+      
+      // اگر هیچ نقشی موجود نیست، پیام مناسب نمایش ده
+      if (availableRoles.length === 0) {
+        return {
+          text: '❌ هیچ دبیر یا راهبری برای گزارش‌گیری یافت نشد.\nلطفاً ابتدا دبیران را در بخش مدیریت دبیران اضافه کنید.',
+          keyboard: [[{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]]
+        };
+      }
     
-    if (availableRoles.length === 0) {
+      // ذخیره وضعیت کاربر
+      this.userStates.set(chatId, {
+        userId,
+        userRole,
+        userName,
+        step: 'select_role',
+        selectedRole: null,
+        selectedUserId: null,
+        answers: {}
+      });
+
+      // ساخت کیبورد برای انتخاب نقش
+      const keyboard = [];
+      for (const role of availableRoles) {
+        keyboard.push([{ 
+          text: `👥 ${this.roleDisplayNames[role]}ها`, 
+          callback_data: `select_role_${role}` 
+        }]);
+      }
+      keyboard.push([{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]);
+
       return {
-        text: '❌ شما نمی‌توانید از هیچ نقشی گزارش بگیرید.',
+        text: `📝 *گزارش‌گیری سلسله‌مراتبی*\n\n👤 شما به عنوان ${this.roleDisplayNames[userRole]} می‌توانید از نقش‌های زیر گزارش بگیرید:\n\nلطفاً نقش مورد نظر را انتخاب کنید:`,
+        keyboard
+      };
+    } catch (error) {
+      console.error('❌ خطا در شروع گزارش‌گیری:', error);
+      return {
+        text: '❌ خطا در شروع گزارش‌گیری. لطفاً دوباره تلاش کنید.',
         keyboard: [[{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]]
       };
     }
-
-    // ذخیره وضعیت کاربر
-    this.userStates.set(chatId, {
-      userId,
-      userRole,
-      userName,
-      step: 'select_role',
-      selectedRole: null,
-      selectedUserId: null,
-      answers: {}
-    });
-
-    // ساخت کیبورد برای انتخاب نقش
-    const keyboard = [];
-    for (const role of availableRoles) {
-      keyboard.push([{ 
-        text: `👥 ${this.roleDisplayNames[role]}ها`, 
-        callback_data: `select_role_${role}` 
-      }]);
-    }
-    keyboard.push([{ text: '🔙 بازگشت', callback_data: 'back_to_main' }]);
-
-    return {
-      text: `📝 *گزارش‌گیری سلسله‌مراتبی*\n\n👤 شما به عنوان ${this.roleDisplayNames[userRole]} می‌توانید از نقش‌های زیر گزارش بگیرید:\n\nلطفاً نقش مورد نظر را انتخاب کنید:`,
-      keyboard
-    };
   }
 
   // انتخاب نقش برای گزارش‌گیری
@@ -126,11 +171,30 @@ class HierarchicalReportingManager {
     }
 
     try {
-      // بارگذاری کاربران از فایل کانفیگ
-      const { USERS } = require('./3config');
-      const usersWithRole = Object.entries(USERS)
-        .filter(([id, user]) => user.role === role)
-        .map(([id, user]) => ({ id, name: user.name }));
+      // بارگذاری کاربران از فایل workshops.json
+      const fs = require('fs');
+      const path = require('path');
+      const workshopsFile = path.join(__dirname, 'data', 'workshops.json');
+      
+      let usersWithRole = [];
+      
+      if (fs.existsSync(workshopsFile)) {
+        const workshopsData = JSON.parse(fs.readFileSync(workshopsFile, 'utf8'));
+        
+        if (role === 'ASSISTANT' && workshopsData.assistant) {
+          // تبدیل دبیران به فرمت مورد نیاز
+          usersWithRole = Object.entries(workshopsData.assistant).map(([id, user]) => ({
+            id,
+            name: user.name || 'نامشخص'
+          }));
+        } else if (role === 'COACH' && workshopsData.coach) {
+          // تبدیل راهبران به فرمت مورد نیاز
+          usersWithRole = Object.entries(workshopsData.coach).map(([id, user]) => ({
+            id,
+            name: user.name || 'نامشخص'
+          }));
+        }
+      }
 
       if (usersWithRole.length === 0) {
         return {
@@ -139,7 +203,7 @@ class HierarchicalReportingManager {
         };
       }
 
-      // ساخت کیبورد برای انتخاب کاربر
+      // ساخت کیبرد برای انتخاب کاربر
       const keyboard = [];
       for (const user of usersWithRole) {
         keyboard.push([{ 
@@ -195,8 +259,22 @@ class HierarchicalReportingManager {
     }
 
     try {
-      const { USERS } = require('./3config');
-      const selectedUserName = USERS[state.selectedUserId]?.name || 'کاربر نامشخص';
+      // بارگذاری اطلاعات کاربر از فایل workshops.json
+      const fs = require('fs');
+      const path = require('path');
+      const workshopsFile = path.join(__dirname, 'data', 'workshops.json');
+      
+      let selectedUserName = 'کاربر نامشخص';
+      
+      if (fs.existsSync(workshopsFile)) {
+        const workshopsData = JSON.parse(fs.readFileSync(workshopsFile, 'utf8'));
+        
+        if (state.selectedRole === 'ASSISTANT' && workshopsData.assistant && workshopsData.assistant[state.selectedUserId]) {
+          selectedUserName = workshopsData.assistant[state.selectedUserId].name || 'کاربر نامشخص';
+        } else if (state.selectedRole === 'COACH' && workshopsData.coach && workshopsData.coach[state.selectedUserId]) {
+          selectedUserName = workshopsData.coach[state.selectedUserId].name || 'کاربر نامشخص';
+        }
+      }
 
       return {
         text: `📝 *گزارش‌گیری از ${this.roleDisplayNames[state.selectedRole]}*\n\n👤 ${selectedUserName}\n\nسوال اول:\n\n📞 آیا با این ${this.roleDisplayNames[state.selectedRole]} ارتباط داشته‌اید؟`,
@@ -312,8 +390,22 @@ class HierarchicalReportingManager {
     }
 
     try {
-      const { USERS } = require('./3config');
-      const selectedUserName = USERS[state.selectedUserId]?.name || 'کاربر نامشخص';
+      // بارگذاری اطلاعات کاربر از فایل workshops.json
+      const fs = require('fs');
+      const path = require('path');
+      const workshopsFile = path.join(__dirname, 'data', 'workshops.json');
+      
+      let selectedUserName = 'کاربر نامشخص';
+      
+      if (fs.existsSync(workshopsFile)) {
+        const workshopsData = JSON.parse(fs.readFileSync(workshopsFile, 'utf8'));
+        
+        if (state.selectedRole === 'ASSISTANT' && workshopsData.assistant && workshopsData.assistant[state.selectedUserId]) {
+          selectedUserName = workshopsData.assistant[state.selectedUserId].name || 'کاربر نامشخص';
+        } else if (state.selectedRole === 'COACH' && workshopsData.coach && workshopsData.coach[state.selectedUserId]) {
+          selectedUserName = workshopsData.coach[state.selectedUserId].name || 'کاربر نامشخص';
+        }
+      }
 
       const communicationText = {
         'communication_phone': 'تماس تلفنی',
@@ -385,16 +477,29 @@ class HierarchicalReportingManager {
       const { userId, userRole, userName, selectedRole, selectedUserId, answers } = state;
       const today = new Date().toISOString().split('T')[0];
       
-      if (!this.reports[today]) {
-        this.reports[today] = {};
+      // بارگذاری فایل گزارش‌ها
+      const fs = require('fs');
+      const path = require('path');
+      const reportsFile = path.join(__dirname, 'data', 'hierarchical_reports.json');
+      
+      let reportsData = { reports: {}, metadata: {} };
+      
+      if (fs.existsSync(reportsFile)) {
+        reportsData = JSON.parse(fs.readFileSync(reportsFile, 'utf8'));
       }
       
-      if (!this.reports[today][userId]) {
-        this.reports[today][userId] = {};
+      // ایجاد ساختار تاریخ اگر وجود ندارد
+      if (!reportsData.reports[today]) {
+        reportsData.reports[today] = {};
+      }
+      
+      if (!reportsData.reports[today][userId]) {
+        reportsData.reports[today][userId] = {};
       }
 
       // ذخیره گزارش
-      this.reports[today][userId][`${selectedRole}_${selectedUserId}`] = {
+      const reportKey = `${selectedRole}_${selectedUserId}`;
+      reportsData.reports[today][userId][reportKey] = {
         reporterRole: userRole,
         reporterName: userName,
         targetRole: selectedRole,
@@ -403,7 +508,11 @@ class HierarchicalReportingManager {
         answers
       };
 
-      return this.saveReports();
+      // ذخیره در فایل
+      fs.writeFileSync(reportsFile, JSON.stringify(reportsData, null, 2), 'utf8');
+      console.log(`✅ گزارش سلسله‌مراتبی برای ${selectedRole} ${selectedUserId} ذخیره شد`);
+      
+      return true;
     } catch (error) {
       console.error('❌ خطا در ذخیره گزارش:', error);
       return false;
