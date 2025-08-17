@@ -38,3 +38,7 @@ src/lib/gateway-config.json
 *.zip
 *.tar.gz
 tailwind-test - jahad 8 16 2025 6 40.zip
+robot/data/smart_registration.json
+robot/data/reports_config.json
+robot/data/reports_config.json
+robot/data/reports_config.json
