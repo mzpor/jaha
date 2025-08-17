@@ -12,7 +12,7 @@ class SabtManager {
     this.userStates = new Map(); // وضعیت کاربران در حال ثبت گزارش
     
     // اضافه کردن ماژول گزارش‌گیری سلسله‌مراتبی
-    this.hierarchicalReporting = require('./hierarchical_reporting');
+            this.hierarchicalReporting = require('./19hierarchical');
   }
 
   // بارگذاری گزارش‌های موجود

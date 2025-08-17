@@ -115,19 +115,19 @@ class AssistantManagerModule {
         return { inline_keyboard: keyboard };
     }
     
-    // نمایش پنل مدیریت کمک مربی
+    // نمایش پنل مدیریت دبیران
     async showAssistantManagement(chatId, userId) {
         let text = '';
         if (!this.assistants || Object.keys(this.assistants).length === 0) {
-            text = '👨‍🏫 *مدیریت کمک مربی‌ها*\n\n❌ هیچ کمک مربی ثبت نشده است.\nبرای شروع، کمک مربی جدید اضافه کنید:';
+            text = '👨‍🏫 *مدیریت دبیران*\n\n❌ هیچ دبیری ثبت نشده است.\nبرای شروع، دبیر جدید اضافه کنید:';
         } else {
-            text = '👨‍🏫 *مدیریت کمک مربی‌ها*\n\n📋 لیست کمک مربی‌های ثبت شده:\n';
+            text = '👨‍🏫 *مدیریت دبیران*\n\n📋 لیست دبیران ثبت شده:\n';
             for (const [assistantId, assistant] of Object.entries(this.assistants)) {
                 const name = assistant.name || 'نامشخص';
                 const phone = assistant.phone || 'نامشخص';
                 text += `👨‍🏫 *${name}* - ${phone}\n`;
             }
-            text += '\nبرای مشاهده جزئیات و ویرایش، روی کمک مربی مورد نظر کلیک کنید:';
+            text += '\nبرای مشاهده جزئیات و ویرایش، روی دبیر مورد نظر کلیک کنید:';
         }
         
         const replyMarkup = this.getAssistantManagementKeyboard();
@@ -177,12 +177,12 @@ class AssistantManagerModule {
         }
     }
     
-    // اضافه کردن کمک مربی جدید
+    // اضافه کردن دبیر جدید
     async handleAddAssistant(chatId, messageId, userId, callbackQueryId) {
         // تنظیم وضعیت کاربر
         this.userStates[userId] = 'assistant_add_name';
         
-        const text = '📝 *اضافه کردن کمک مربی جدید*\n\n👤 لطفاً نام و فامیل کمک مربی را وارد کنید:';
+        const text = '📝 *اضافه کردن دبیر جدید*\n\n👤 لطفاً نام و فامیل دبیر را وارد کنید:';
         const keyboard = [[{ text: '🔙 بازگشت', callback_data: 'assistant_back' }]];
         
         return { text, keyboard };
@@ -193,51 +193,51 @@ class AssistantManagerModule {
         return await this.showAssistantManagement(chatId, userId);
     }
     
-    // مشاهده جزئیات کمک مربی
+    // مشاهده جزئیات دبیر
     async handleViewAssistant(chatId, messageId, userId, assistantId, callbackQueryId) {
         const assistant = this.assistants[assistantId];
         if (!assistant) {
-            return { text: '❌ کمک مربی یافت نشد', keyboard: [[{ text: '🔙 بازگشت', callback_data: 'assistant_list' }]] };
+            return { text: '❌ دبیر یافت نشد', keyboard: [[{ text: '🔙 بازگشت', callback_data: 'assistant_list' }]] };
         }
         
-        const text = `👨‍🏫 *جزئیات کمک مربی*\n\n👤 **نام:** ${assistant.name || 'نامشخص'}\n📱 **تلفن:** ${assistant.phone || 'نامشخص'}\n📅 **تاریخ ثبت:** ${assistant.created_at || 'نامشخص'}`;
+        const text = `👨‍🏫 *جزئیات دبیر*\n\n👤 **نام:** ${assistant.name || 'نامشخص'}\n📱 **تلفن:** ${assistant.phone || 'نامشخص'}\n📅 **تاریخ ثبت:** ${assistant.created_at || 'نامشخص'}`;
         const keyboard = this.getAssistantEditKeyboard(assistantId).inline_keyboard;
         
         return { text, keyboard };
     }
     
-    // ویرایش نام کمک مربی
+    // ویرایش نام دبیر
     async handleEditAssistantName(chatId, messageId, userId, assistantId, callbackQueryId) {
         this.userStates[userId] = `assistant_edit_name_${assistantId}`;
         
-        const text = '✏️ *ویرایش نام کمک مربی*\n\n👤 لطفاً نام جدید را وارد کنید:';
+        const text = '✏️ *ویرایش نام دبیر*\n\n👤 لطفاً نام جدید را وارد کنید:';
         const keyboard = [[{ text: '🔙 بازگشت', callback_data: `assistant_view_${assistantId}` }]];
         
         return { text, keyboard };
     }
     
-    // ویرایش تلفن کمک مربی
+    // ویرایش تلفن دبیر
     async handleEditAssistantPhone(chatId, messageId, userId, assistantId, callbackQueryId) {
         this.userStates[userId] = `assistant_edit_phone_${assistantId}`;
         
-        const text = '📱 *ویرایش تلفن کمک مربی*\n\n📞 لطفاً شماره تلفن جدید را وارد کنید:';
+        const text = '📱 *ویرایش تلفن دبیر*\n\n📞 لطفاً شماره تلفن جدید را وارد کنید:';
         const keyboard = [[{ text: '🔙 بازگشت', callback_data: `assistant_view_${assistantId}` }]];
         
         return { text, keyboard };
     }
     
-    // حذف کمک مربی
+    // حذف دبیر
     async handleDeleteAssistant(chatId, messageId, userId, assistantId, callbackQueryId) {
         const assistant = this.assistants[assistantId];
         if (!assistant) {
-            return { text: '❌ کمک مربی یافت نشد', keyboard: [[{ text: '🔙 بازگشت', callback_data: 'assistant_list' }]] };
+            return { text: '❌ دبیر یافت نشد', keyboard: [[{ text: '🔙 بازگشت', callback_data: 'assistant_list' }]] };
         }
         
-        // حذف کمک مربی
+        // حذف دبیر
         delete this.assistants[assistantId];
         this.saveAssistants();
         
-        const text = `🗑️ *کمک مربی حذف شد*\n\n👤 **نام:** ${assistant.name}\n📱 **تلفن:** ${assistant.phone}\n\n✅ کمک مربی با موفقیت حذف شد.`;
+        const text = `🗑️ *دبیر حذف شد*\n\n👤 **نام:** ${assistant.name}\n📱 **تلفن:** ${assistant.phone}\n\n✅ دبیر با موفقیت حذف شد.`;
         const keyboard = [[{ text: '🔙 بازگشت به لیست', callback_data: 'assistant_list' }]];
         
         return { text, keyboard };
@@ -279,7 +279,7 @@ class AssistantManagerModule {
             this.tempData[userId] = { name: text };
             this.userStates[userId] = 'assistant_add_phone';
             
-            const responseText = '📱 *شماره تلفن*\n\n📞 لطفاً شماره تلفن کمک مربی را وارد کنید:';
+            const responseText = '📱 *شماره تلفن*\n\n📞 لطفاً شماره تلفن دبیر را وارد کنید:';
             const keyboard = [[{ text: '🔙 بازگشت', callback_data: 'assistant_back' }]];
             
             return { text: responseText, keyboard };
@@ -321,9 +321,9 @@ class AssistantManagerModule {
             delete this.tempData[userId];
             delete this.userStates[userId];
             
-            const responseText = `✅ *کمک مربی اضافه شد*\n\n👤 **نام کامل:** ${fullName}\n👤 **اسم کوچک:** ${firstName}\n📱 **تلفن:** ${text}\n🎭 **نقش:** کمک مربی\n\n🎉 کمک مربی جدید با موفقیت ثبت شد.`;
+            const responseText = `✅ *دبیر اضافه شد*\n\n👤 **نام کامل:** ${fullName}\n👤 **اسم کوچک:** ${firstName}\n📱 **تلفن:** ${text}\n🎭 **نقش:** دبیر\n\n🎉 دبیر جدید با موفقیت ثبت شد.`;
             const keyboard = [
-                [{ text: '📝 کمک مربی دیگر', callback_data: 'assistant_add' }],
+                [{ text: '📝 دبیر دیگر', callback_data: 'assistant_add' }],
                 [{ text: '🔙 بازگشت به لیست', callback_data: 'assistant_list' }]
             ];
             
@@ -343,7 +343,7 @@ class AssistantManagerModule {
                 assistant.name = text;
                 this.saveAssistants();
                 
-                const responseText = `✅ *نام کمک مربی ویرایش شد*\n\n👤 **نام جدید:** ${text}\n📱 **تلفن:** ${assistant.phone}`;
+                const responseText = `✅ *نام دبیر ویرایش شد*\n\n👤 **نام جدید:** ${text}\n📱 **تلفن:** ${assistant.phone}`;
                 const keyboard = this.getAssistantEditKeyboard(assistantId).inline_keyboard;
                 
                 // پاک کردن وضعیت کاربر
@@ -359,7 +359,7 @@ class AssistantManagerModule {
                 assistant.phone = text;
                 this.saveAssistants();
                 
-                const responseText = `✅ *تلفن کمک مربی ویرایش شد*\n\n👤 **نام:** ${assistant.name}\n📱 **تلفن جدید:** ${text}`;
+                const responseText = `✅ *تلفن دبیر ویرایش شد*\n\n👤 **نام:** ${assistant.name}\n📱 **تلفن جدید:** ${text}`;
                 const keyboard = this.getAssistantEditKeyboard(assistantId).inline_keyboard;
                 
                 // پاک کردن وضعیت کاربر
@@ -405,7 +405,7 @@ class AssistantManagerModule {
                     },
                     timestamp: Date.now()
                 };
-                console.log(`✅ کمک مربی موجود به‌روزرسانی شد: ${assistantData.fullName}`);
+                console.log(`✅ دبیر موجود به‌روزرسانی شد: ${assistantData.fullName}`);
             } else {
                 // اضافه کردن کاربر جدید
                 const newUserId = Date.now().toString();
@@ -414,7 +414,7 @@ class AssistantManagerModule {
                     data: assistantData,
                     timestamp: Date.now()
                 };
-                console.log(`✅ کمک مربی جدید اضافه شد: ${assistantData.fullName}`);
+                console.log(`✅ دبیر جدید اضافه شد: ${assistantData.fullName}`);
             }
             
             // به‌روزرسانی lastUpdated
@@ -422,10 +422,10 @@ class AssistantManagerModule {
             
             // ذخیره فایل
             fs.writeFileSync(registrationFile, JSON.stringify(registrationData, null, 2), 'utf8');
-            console.log(`✅ کمک مربی در smart_registration.json ذخیره شد: ${assistantData.fullName}`);
+            console.log(`✅ دبیر در smart_registration.json ذخیره شد: ${assistantData.fullName}`);
             
         } catch (error) {
-            console.error('❌ خطا در ذخیره کمک مربی در smart_registration.json:', error.message);
+            console.error('❌ خطا در ذخیره دبیر در smart_registration.json:', error.message);
         }
     }
 }
