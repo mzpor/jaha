@@ -12,10 +12,16 @@
       "timestamp": 1755323973102
     },
     "1790308237": {
-      "step": "phone",
-      "data": {},
-      "timestamp": 1755404116666
+      "step": "completed",
+      "data": {
+        "phone": "989339253803",
+        "fullName": "محمد محمدی",
+        "firstName": "محمد",
+        "lastName": "محمدی",
+        "userRole": "quran_student"
+      },
+      "timestamp": 1755406129022
     }
   },
-  "lastUpdated": "2025-08-17T04:15:16.666Z"
+  "lastUpdated": "2025-08-17T04:52:46.426Z"
 }
