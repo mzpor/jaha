@@ -1,0 +1,65 @@
+{
+  "coach": {
+    "1": {
+      "name": "راهبر علی",
+      "phone": "0",
+      "region": "پهنه 1",
+      "province": "تهران",
+      "description": "راهبر تخصصی فعالیت‌های جهادی",
+      "capacity": 15,
+      "duration": "3 ماه",
+      "level": "مبتدی تا متوسط"
+    },
+    "2": {
+      "name": "جعفری",
+      "phone": "",
+      "region": "پهنه 2",
+      "province": "اصفهان",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
+    },
+    "3": {
+      "name": "راهبر محمد",
+      "phone": "09942878984",
+      "region": "پهنه 3",
+      "province": "مشهد",
+      "description": "توضیحات موجود نیست",
+      "capacity": 20,
+      "duration": "3 ماه",
+      "level": "همه سطوح"
+    },
+    "4": {
+      "name": "راهبر حسن فدوی",
+      "phone": "09102175431",
+      "region": "پهنه ۲",
+      "province": "تهران شیراز..",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
+    },
+    "5": {
+      "name": "محمد فدوی",
+      "phone": "",
+      "region": "پهنه ۲",
+      "province": "تهران اصفهان",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
+    },
+    "6": {
+      "name": "مجید",
+      "phone": "09224939074",
+      "region": "پهنه ۲",
+      "province": "تهران\nاصفهان",
+      "description": "توضیحات موجود نیست",
+      "capacity": 100,
+      "duration": "گزارش روزانه",
+      "level": "حرفه ای "
+    }
+  },
+  "assistant": {}
+}

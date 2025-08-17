@@ -1,0 +1,74 @@
+{
+  "users": {},
+  "roles": {},
+  "registrations": {
+    "userStates": {
+      "574330749": {
+        "step": "completed",
+        "data": {
+          "phone": "989942878984",
+          "fullName": "راهبر محمد",
+          "firstName": "راهبر محمد",
+          "lastName": "",
+          "userRole": "coach"
+        },
+        "timestamp": 1755441063543
+      }
+    },
+    "lastUpdated": "2025-08-17T14:31:19.035Z"
+  },
+  "coaches": [
+    {
+      "id": "phone_1755212603854_ga1njd27g",
+      "name": "همرادو همراه ۲",
+      "phone": "989942878984",
+      "type": "phone_based"
+    },
+    {
+      "id": "phone_1755321275607_cjxbexzgx",
+      "name": "راهبر حسن فدوی",
+      "phone": "989102175431",
+      "type": "phone_based"
+    }
+  ],
+  "permanentMembers": {
+    "999999999": {
+      "fullName": "مربی تست جدید",
+      "firstName": "مربی",
+      "nationalId": "999999999",
+      "phone": "09123456789",
+      "registrationComplete": true,
+      "source": "test",
+      "registrationDate": 1754796802171,
+      "lastUpdated": 1754796802171,
+      "status": "active"
+    },
+    "1234567890": {
+      "fullName": "علی رضایی",
+      "firstName": "علی",
+      "nationalId": "1234567890",
+      "phone": "09123456789",
+      "workshopId": "w-1404-01",
+      "registrationComplete": true,
+      "source": "both",
+      "registrationDate": 1754796802167,
+      "lastUpdated": 1754796853807,
+      "status": "active"
+    },
+    "0987654321": {
+      "fullName": "سارا احمدی",
+      "firstName": "سارا",
+      "nationalId": "0987654321",
+      "phone": "09987654321",
+      "workshopId": "w-1404-02",
+      "registrationComplete": true,
+      "source": "website",
+      "registrationDate": 1754796802168,
+      "lastUpdated": 1754796853807,
+      "status": "active"
+    }
+  },
+  "memberRoles": {},
+  "verificationCodes": {},
+  "lastUpdated": "2025-08-17T18:27:14.577Z"
+}

@@ -1,0 +1,137 @@
+{
+  "bot": {
+    "token": "262597677:qzQNXdMMGfmORJsSAJmzEWRsZ68zqOjoVcFibLWC",
+    "baseUrl": "https://tapi.bale.ai/bot",
+    "enabled": true
+  },
+  "groups": {
+    "mainGroup": 5537396165,
+    "reportGroup": 5537396165,
+    "enabled": true
+  },
+  "roles": {
+    "SCHOOL_ADMIN": "مدیر",
+    "COACH": "راهبر",
+    "ASSISTANT": "دبیر",
+    "STUDENT": "فعال"
+  },
+  "workshop": {
+    "displayName": "راهبران",
+    "capacity": 100,
+    "duration": "گزارش روزانه",
+    "level": "حرفه ای"
+  },
+  "buttons": {
+    "robot": true,
+    "registration": false,
+    "evaluation": true,
+    "reports": true
+  },
+  "system": {
+    "autoBackup": true,
+    "logLevel": "info",
+    "heartbeatInterval": 30000
+  },
+  "lastUpdated": "2025-08-17T18:27:09.309Z",
+  "settings": {
+    "schoolName": "مرکز جهادی",
+    "registrationOpen": true,
+    "maxStudents": null,
+    "adminMessage": "سلام مدیر عزیز! 👋",
+    "practice_days": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "practice_hours": [
+      17
+    ],
+    "evaluation_days": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "attendance_days": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "enable_satisfaction_survey": true,
+    "enable_bot_reports": true
+  },
+  "reports": {
+    "enabled": true,
+    "lastUpdate": "2025-08-17T14:31:03.195Z",
+    "updatedBy": "system",
+    "updatedFrom": "default",
+    "robotOnline": false,
+    "lastRobotPing": "2025-08-17T14:34:55.574Z",
+    "systemStatus": {
+      "robot": false,
+      "gateway": false,
+      "website": false,
+      "lastUpdate": "2025-08-17T14:34:55.578Z",
+      "lastChange": {
+        "system": "robot",
+        "status": false,
+        "timestamp": "2025-08-17T14:34:55.578Z",
+        "action": "آفلاین شد"
+      }
+    }
+  },
+  "siteStatus": {
+    "registration": {
+      "enabled": true,
+      "lastUpdate": 1755309782032,
+      "updatedFrom": "ربات",
+      "maxCapacity": 100,
+      "currentRegistrations": 0
+    },
+    "survey": {
+      "enabled": true,
+      "lastUpdate": 1755309789340,
+      "updatedFrom": "ربات",
+      "currentQuestion": "نظر شما درباره کیفیت کارگاه‌ها چیست؟",
+      "totalResponses": 0
+    }
+  },
+  "groupsConfig": {
+    "groups": {
+      "5668045453": {
+        "name": "گروه گزارش",
+        "enabled": 0,
+        "lastUpdate": "2025-08-15T01:23:57.496Z",
+        "updatedBy": "test_user"
+      },
+      "5417069312": {
+        "name": "گروه ربات ۲",
+        "enabled": 1,
+        "lastUpdate": "2025-08-15T01:23:57.497Z",
+        "updatedBy": "test_user"
+      },
+      "4594690153": {
+        "name": "گروه ربات ۱",
+        "enabled": 1,
+        "lastUpdate": "2025-08-15T01:23:57.497Z",
+        "updatedBy": "test_user"
+      }
+    },
+    "config": {
+      "defaultEnabled": 1,
+      "lastUpdate": "2025-08-15T01:23:57.497Z",
+      "updatedBy": "test_user"
+    }
+  }
+}

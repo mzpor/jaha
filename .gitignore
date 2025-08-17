@@ -27,9 +27,35 @@ dist-ssr
 gateway-config.json
 src/lib/gateway-config.json
 
-# Data files (runtime generated) - فایل‌های data باید در git باشند
-# robot/data/  # این خط حذف شد
-# data/        # این خط حذف شد
+# Sensitive data files - فایل‌های حساس نباید در git باشند
+robot/data/verification_codes.json
+robot/data/attendance_data.json
+robot/data/evaluation_data.json
+robot/data/evaluation_results.json
+robot/data/monthly_reports.json
+robot/data/weekly_reports.json
+robot/data/satisfaction_data.json
+robot/data/practice_data.json
+robot/data/website_registrations.json
+robot/data/registrations.json
+robot/data/reports.json
+
+# Configuration files that should be in git - فایل‌های پیکربندی باید در git باشند
+# robot/data/settings.json
+# robot/data/groups_config.json
+# robot/data/member_roles.json
+# robot/data/evaluation_questions.json
+# robot/data/group_evaluation_config.json
+# robot/data/workshops.json
+# robot/data/coaches.json
+# robot/data/permanent_members.json
+# robot/data/members.json
+# robot/data/users.json
+# robot/data/classes.json
+# robot/data/attendance.json
+# robot/data/roles_data.json
+# robot/data/settings_data.json
+
 /src/lib
 /src
 src/lib/gateway-config.json
@@ -38,8 +64,4 @@ src/lib/gateway-config.json
 *.zip
 *.tar.gz
 tailwind-test - jahad 8 16 2025 6 40.zip
-robot/data/smart_registration.json
-robot/data/reports_config.json
-#  git rm --cached robot/data/smart_registration.json
-#git commit -m "Remove tracked smart_registration.json"
 

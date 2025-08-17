@@ -1,0 +1,20 @@
+{
+  "enabled": true,
+  "lastUpdate": "2025-08-17T14:31:03.195Z",
+  "updatedBy": "system",
+  "updatedFrom": "default",
+  "robotOnline": false,
+  "lastRobotPing": "2025-08-17T14:34:55.574Z",
+  "systemStatus": {
+    "robot": false,
+    "gateway": false,
+    "website": false,
+    "lastUpdate": "2025-08-17T14:34:55.578Z",
+    "lastChange": {
+      "system": "robot",
+      "status": false,
+      "timestamp": "2025-08-17T14:34:55.578Z",
+      "action": "آفلاین شد"
+    }
+  }
+}
