@@ -27,20 +27,7 @@ dist-ssr
 gateway-config.json
 src/lib/gateway-config.json
 
-# Sensitive data files - فایل‌های حساس نباید در git باشند
-robot/data/verification_codes.json
-robot/data/attendance_data.json
-robot/data/evaluation_data.json
-robot/data/evaluation_results.json
-robot/data/monthly_reports.json
-robot/data/weekly_reports.json
-robot/data/satisfaction_data.json
-robot/data/practice_data.json
-robot/data/website_registrations.json
-robot/data/registrations.json
-robot/data/reports.json
-
-# Additional runtime JSON files - فایل‌های JSON اضافی runtime
+# Runtime JSON files - فایل‌های JSON runtime نباید در git باشند
 robot/data/reports_config.json
 robot/data/settings.json
 robot/data/workshops.json
@@ -49,12 +36,13 @@ robot/data/practice_data.json
 robot/data/satisfaction_data.json
 robot/data/weekly_reports.json
 robot/data/evaluation_data.json
-robot/data/attendance_reports.json
 
 # Configuration files that should be in git - فایل‌های پیکربندی باید در git باشند
 # robot/data/evaluation_system.json
 # robot/data/user_management.json
 # robot/data/core_config.json
+# robot/data/attendance_reports.json
+# robot/data/smart_registration.json
 
 /src/lib
 /src
