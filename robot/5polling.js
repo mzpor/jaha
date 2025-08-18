@@ -29,7 +29,8 @@ const {
   isOsatdManagementEnabled,
   hasOsatdManagementAccess,
   MAIN_BUTTONS_CONFIG,
-  isRobotButtonVisibleForRole
+  isRobotButtonVisibleForRole,
+  isRegisterInfoVisibleForRole
 } = require('./3config');
 const { 
   getCurrentCoachId, 
@@ -360,20 +361,25 @@ if (isRobotButtonVisibleForRole(role)) {
   } else if (role === ROLES.COACH) {
     secondRow.push('راهبر');
     
-    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ
-    if (MAIN_BUTTONS_CONFIG.REGISTER_INFO === 1) {
+    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ نقش
+    if (isRegisterInfoVisibleForRole(role)) {
       secondRow.push('ثبت اطلاعات');
     }
   } else if (role === ROLES.ASSISTANT) {
     secondRow.push('دبیر');
     
-    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ
-    if (MAIN_BUTTONS_CONFIG.REGISTER_INFO === 1) {
+    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ نقش
+    if (isRegisterInfoVisibleForRole(role)) {
       secondRow.push('ثبت اطلاعات');
     }
   } else if (role === ROLES.STUDENT) {
     // دکمه "فعال" برای همه کاربران با نقش STUDENT
     secondRow.push('فعال');
+    
+    // اضافه کردن دکمه ثبت اطلاعات بر اساس کانفیگ نقش
+    if (isRegisterInfoVisibleForRole(role)) {
+      secondRow.push('ثبت اطلاعات');
+    }
   }
   
   if (secondRow.length > 0) {
