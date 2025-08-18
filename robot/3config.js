@@ -95,12 +95,20 @@ const WORKSHOP_CONFIG = {
 
 // ===== کنترل نمایش دکمه‌ها در پنل مدیر =====
 const BUTTON_VISIBILITY_CONFIG = {
-  ROBOT_BUTTON: 1,  // 1 = نمایش دکمه ربات، 0 = عدم نمایش
+  ROBOT_BUTTON: 0,  // 1 = نمایش دکمه ربات، 0 = عدم نمایش
   REGISTRATION_BUTTON: 0,  // 1 = نمایش دکمه ثبت‌نام ماه آینده، 0 = عدم نمایش
   // در آینده می‌توان دکمه‌های بیشتری اضافه کرد
   //SETTINGS_BUTTON: 1,
   ROLES_BUTTON: 0,  // مدیریت نقش‌ها غیرفعال شده
   PRACTICE_EVALUATION_DAYS_BUTTON: 0,  // دکمه روزهای تمرین و ارزیابی: 1 = فعال، 0 = غیرفعال
+};
+
+// کنترل نمایش دکمه ربات برای هر نقش
+const ROBOT_BUTTON_BY_ROLE = {
+  SCHOOL_ADMIN: 1,    // مدیر: 1 = نمایش، 0 = مخفی
+  COACH: 0,           // راهبر: 1 = نمایش، 0 = مخفی
+  ASSISTANT: 0,       // دبیر: 1 = نمایش، 0 = مخفی
+  STUDENT: 0          // فعال: 1 = نمایش، 0 = مخفی
 };
 
 // ===== کنترل نمایش دکمه‌های اصلی برای هر نقش =====
@@ -170,6 +178,29 @@ const getButtonVisibilityForRole = (role) => {
     registerInfo: isRegisterInfoVisibleForRole(role),
     settings: isSettingsVisibleForRole(role)
   };
+};
+
+// ===== توابع کنترل نمایش دکمه ربات برای هر نقش =====
+
+// بررسی نمایش دکمه ربات برای نقش خاص
+const isRobotButtonVisibleForRole = (role) => {
+  return ROBOT_BUTTON_BY_ROLE[role] === 1;
+};
+
+// تغییر وضعیت نمایش دکمه ربات برای نقش خاص
+const setRobotButtonVisibilityForRole = (role, visible) => {
+  if (ROBOT_BUTTON_BY_ROLE.hasOwnProperty(role)) {
+    ROBOT_BUTTON_BY_ROLE[role] = visible ? 1 : 0;
+    console.log(`🔄 [ROBOT_BUTTON] Robot button visibility for role ${role} set to: ${visible ? 'visible' : 'hidden'}`);
+    return true;
+  }
+  console.warn(`⚠️ [ROBOT_BUTTON] Role ${role} not found in robot button config`);
+  return false;
+};
+
+// دریافت تنظیمات نمایش دکمه ربات برای همه نقش‌ها
+const getRobotButtonConfig = () => {
+  return { ...ROBOT_BUTTON_BY_ROLE };
 };
 
 // ===== کنترل نمایش گروه‌ها برای نقش‌های مختلف =====
@@ -1774,6 +1805,7 @@ module.exports = {
   setButtonVisibility,
   getButtonVisibilityConfig,
   BUTTON_VISIBILITY_CONFIG,
+  ROBOT_BUTTON_BY_ROLE,
   GROUP_VISIBILITY_CONFIG,
   // ===== توابع کنترل دسترسی کاربران =====
   USER_ACCESS_CONFIG,
@@ -1809,6 +1841,10 @@ module.exports = {
   setSettingsVisibilityForRole,
   getMainButtonsConfig,
   getButtonVisibilityForRole,
+  // ===== توابع کنترل نمایش دکمه ربات برای هر نقش =====
+  isRobotButtonVisibleForRole,
+  setRobotButtonVisibilityForRole,
+  getRobotButtonConfig,
   // ===== کانفیگ سیستم ارزیابی =====
   EVALUATION_SYSTEM_CONFIG,
   isEvaluationSystemEnabled,

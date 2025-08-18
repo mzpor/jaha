@@ -28,7 +28,8 @@ const {
   hasGroupManagementAccess,
   isOsatdManagementEnabled,
   hasOsatdManagementAccess,
-  MAIN_BUTTONS_CONFIG
+  MAIN_BUTTONS_CONFIG,
+  isRobotButtonVisibleForRole
 } = require('./3config');
 const { 
   getCurrentCoachId, 
@@ -333,10 +334,10 @@ function generateDynamicKeyboard(role, userId = null) {
   const baseKeyboard = [['شروع', 'خروج']];
   const secondRow = [];
   
-  // اضافه کردن دکمه ربات فقط برای مدیر
-  if (role === ROLES.SCHOOL_ADMIN && isButtonVisible('ROBOT_BUTTON')) {
-    secondRow.push('ربات');
-  }
+  // اضافه کردن دکمه ربات بر اساس کانفیگ نقش
+if (isRobotButtonVisibleForRole(role)) {
+  secondRow.push('ربات');
+}
   
   // اضافه کردن سایر دکمه‌ها بر اساس نقش
   if (role === ROLES.SCHOOL_ADMIN) {
