@@ -1030,14 +1030,15 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
     
     // بررسی وضعیت در مدیریت دبیران - اولویت بعدی
     console.log(`🔍 [POLLING] Checking assistant state for user ${msg.from.id}`);
-    const registrationModule = require('./15reg');
-    if (registrationModule.assistantManager && registrationModule.assistantManager.userStates) {
-      const assistantState = registrationModule.assistantManager.userStates[msg.from.id];
+    
+    // استفاده از instance پاس شده از index.js
+    if (registrationInstance && registrationInstance.assistantManager && registrationInstance.assistantManager.userStates) {
+      const assistantState = registrationInstance.assistantManager.userStates[msg.from.id];
       console.log(`🔍 [POLLING] Assistant state: ${assistantState}`);
       
       if (assistantState && (assistantState.startsWith('assistant_add_') || assistantState.startsWith('assistant_edit_'))) {
         console.log(`🔍 [POLLING] User ${msg.from.id} is in assistant state: ${assistantState}`);
-        const result = await registrationModule.assistantManager.handleMessage(msg);
+        const result = await registrationInstance.assistantManager.handleMessage(msg);
         
         if (result && result.text && result.keyboard) {
           console.log(`🔍 [POLLING] Assistant message processed, sending response`);
@@ -1074,10 +1075,17 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
   await safeSendMessage(msg.chat.id, reply, keyboard);
 }
 
-function startPolling() {
+function startPolling(registrationInstance) {
   let pollingInterval = 1000; // شروع با 1 ثانیه
   let isFirstRun = true; // برای تشخیص اولین اجرا
   
+  // اطمینان از وجود registrationInstance
+  if (!registrationInstance) {
+    console.error('❌ [POLLING] registrationInstance is required but not provided');
+    return;
+  }
+  
+  // تعریف poll function با دسترسی به registrationInstance
   const poll = async () => {
     try {
       const updates = await getUpdates(lastId + 1);

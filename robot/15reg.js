@@ -12,9 +12,9 @@ class RegistrationModule {
         this.userStates = {};
         this.loadData();
         
-        // اضافه کردن ماژول مدیریت کمک مربی
-        const AssistantManagerModule = require('./assistant_manager');
-        this.assistantManager = new AssistantManagerModule();
+        // اضافه کردن ماژول مدیریت کمک مربی (نسخه جدید)
+        const AssistantManagerNew = require('./assistant_manager_new');
+        this.assistantManager = new AssistantManagerNew();
         
         // اضافه کردن ماژول پرداخت
         this.paymentModule = new PaymentModule();
@@ -1323,9 +1323,9 @@ class RegistrationModule {
             coachKeyboard
         );
         
-        // اضافه کردن ماژول مدیریت کمک مربی
-        const AssistantManagerModule = require('./assistant_manager');
-        this.assistantManager = new AssistantManagerModule();
+        // اضافه کردن ماژول مدیریت کمک مربی (نسخه جدید)
+        const AssistantManagerNew = require('./assistant_manager_new');
+        this.assistantManager = new AssistantManagerNew();
         console.log(`✅ [15REG] پنل راهبر برای کاربر ${userId} نمایش داده شد`);
     }
     

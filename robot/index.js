@@ -8,6 +8,11 @@
 console.log('🚀 [INDEX] Starting Bale Bot...');
 console.log('🚀 [INDEX] Loading modules...');
 
+// ایجاد instance از RegistrationModule
+const RegistrationModule = require('./15reg');
+const registrationInstance = new RegistrationModule();
+console.log('✅ [INDEX] RegistrationModule instance created');
+
 const { startPolling } = require('./5polling');
 console.log('✅ [INDEX] 5polling module loaded');
 
@@ -40,7 +45,7 @@ logStartup().then(() => {
   }
   
   console.log('🚀 [INDEX] Starting polling...');
-  startPolling();
+  startPolling(registrationInstance);
   console.log('✅ [INDEX] Polling started');
 }).catch(err => {
   console.error('🔴 [INDEX] Error starting bot:', err.message);
