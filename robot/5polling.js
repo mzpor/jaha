@@ -333,8 +333,8 @@ function generateDynamicKeyboard(role, userId = null) {
   const baseKeyboard = [['شروع', 'خروج']];
   const secondRow = [];
   
-  // اضافه کردن دکمه ربات بر اساس کانفیگ
-  if (isButtonVisible('ROBOT_BUTTON')) {
+  // اضافه کردن دکمه ربات فقط برای مدیر
+  if (role === ROLES.SCHOOL_ADMIN && isButtonVisible('ROBOT_BUTTON')) {
     secondRow.push('ربات');
   }
   
