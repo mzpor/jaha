@@ -43,7 +43,6 @@ robot/data/reports.json
 # Additional runtime JSON files - فایل‌های JSON اضافی runtime
 robot/data/reports_config.json
 robot/data/settings.json
-robot/data/smart_registration.json
 robot/data/workshops.json
 
 # Configuration files that should be in git - فایل‌های پیکربندی باید در git باشند
