@@ -1028,6 +1028,25 @@ ${getAllUsersWithRoles().map(user => `• ${user.name} (${user.role})`).join('\n
       return;
     }
     
+    // بررسی وضعیت در مدیریت دبیران - اولویت بعدی
+    console.log(`🔍 [POLLING] Checking assistant state for user ${msg.from.id}`);
+    const registrationModule = require('./15reg');
+    if (registrationModule.assistantManager && registrationModule.assistantManager.userStates) {
+      const assistantState = registrationModule.assistantManager.userStates[msg.from.id];
+      console.log(`🔍 [POLLING] Assistant state: ${assistantState}`);
+      
+      if (assistantState && (assistantState.startsWith('assistant_add_') || assistantState.startsWith('assistant_edit_'))) {
+        console.log(`🔍 [POLLING] User ${msg.from.id} is in assistant state: ${assistantState}`);
+        const result = await registrationModule.assistantManager.handleMessage(msg);
+        
+        if (result && result.text && result.keyboard) {
+          console.log(`🔍 [POLLING] Assistant message processed, sending response`);
+          await sendMessageWithInlineKeyboard(msg.chat.id, result.text, result.keyboard);
+          return;
+        }
+      }
+    }
+    
     // کد مربوط به پردازش پیام‌های عادی
     // نادیده گرفتن کلمات خاص
     if (['ربات', 'bot', 'سلام', 'hi', 'hello', 'خداحافظ', 'bye'].includes(msg.text.toLowerCase())) {

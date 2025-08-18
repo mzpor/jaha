@@ -1287,7 +1287,7 @@ class RegistrationModule {
 
 📋 **گزینه‌های موجود:**
 • 🎯 مدیریت گروه‌ها
-• 👨‍🏫 مدیریت ${getRoleDisplayName('ASSISTANT')}
+• 👨‍🏫 دبیران
 • 📝 ثبت اطلاعات (گزارش‌گیری سلسله‌مراتبی)`;
         
         // کیبرد معمولی (موجود)
@@ -1306,7 +1306,7 @@ class RegistrationModule {
         
         // ساخت کیبرد بر اساس کانفیگ
         const coachKeyboard = [
-            [{ text: `👨‍🏫 مدیریت ${getRoleDisplayName('ASSISTANT')}`, callback_data: 'manage_assistant' }],
+            [{ text: `👨‍🏫 دبیران`, callback_data: 'manage_assistant' }],
             [{ text: '📝 ثبت اطلاعات', callback_data: 'coach_register_info' }],
             [{ text: '🔙 بازگشت', callback_data: 'back' }]
         ];
