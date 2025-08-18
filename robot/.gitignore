@@ -2,4 +2,32 @@ node_modules/
 ARSHIVE/
 lib/
 .env
-# data/  # این خط حذف شد - فایل‌های data باید در git باشند
+
+# Sensitive data files - فایل‌های حساس نباید در git باشند
+data/verification_codes.json
+data/attendance_data.json
+data/evaluation_data.json
+data/evaluation_results.json
+data/monthly_reports.json
+data/weekly_reports.json
+data/satisfaction_data.json
+data/practice_data.json
+data/website_registrations.json
+data/registrations.json
+data/reports.json
+
+# Configuration files that should be in git - فایل‌های پیکربندی باید در git باشند
+# data/settings.json
+# data/groups_config.json
+# data/member_roles.json
+# data/evaluation_questions.json
+# data/group_evaluation_config.json
+# data/workshops.json
+# data/coaches.json
+# data/permanent_members.json
+# data/members.json
+# data/users.json
+# data/classes.json
+# data/attendance.json
+# data/roles_data.json
+# data/settings_data.json
