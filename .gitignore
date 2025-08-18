@@ -44,22 +44,17 @@ robot/data/reports.json
 robot/data/reports_config.json
 robot/data/settings.json
 robot/data/workshops.json
+robot/data/monthly_reports.json
+robot/data/practice_data.json
+robot/data/satisfaction_data.json
+robot/data/weekly_reports.json
+robot/data/evaluation_data.json
+robot/data/attendance_reports.json
 
 # Configuration files that should be in git - فایل‌های پیکربندی باید در git باشند
-# robot/data/settings.json
-# robot/data/groups_config.json
-# robot/data/member_roles.json
-# robot/data/evaluation_questions.json
-# robot/data/group_evaluation_config.json
-# robot/data/workshops.json
-# robot/data/coaches.json
-# robot/data/permanent_members.json
-# robot/data/members.json
-# robot/data/users.json
-# robot/data/classes.json
-# robot/data/attendance.json
-# robot/data/roles_data.json
-# robot/data/settings_data.json
+# robot/data/evaluation_system.json
+# robot/data/user_management.json
+# robot/data/core_config.json
 
 /src/lib
 /src
